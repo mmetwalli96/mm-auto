@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # check if the docker container mm-auto is running and stop it if it is
 docker stop mm-auto
 docker rm mm-auto
