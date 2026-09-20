@@ -1,0 +1,20 @@
+﻿id,name,functionality
+S-5819,Engine (Powertrain),Converts fuel or electrical energy into mechanical power to drive the wheels.
+S-3191,Transmission,Transfers engine power to the wheels and adjusts gear ratios for speed and torque.
+S-0187,Fuel System,"Stores, filters and delivers fuel to the engine at the correct pressure and rate."
+S-3651,Exhaust & Emissions System,Routes combustion gases away and reduces harmful emissions via the catalytic converter and muffler.
+S-7160,Cooling System,Circulates coolant through radiator and engine to keep operating temperature in range.
+S-8870,Lubrication System,"Pumps oil to moving parts to reduce friction, wear and heat build-up."
+S-8657,Electrical & Charging System,"Battery, alternator and wiring supply power for starting, ignition, lights and electronics."
+S-4002,Ignition & Starting System,Cranks the engine and ignites the air-fuel mixture at the right moment.
+S-0148,Braking System,"Slows and stops the vehicle using discs/drums, hydraulics, ABS and the parking brake."
+S-9304,Steering System,Lets the driver control direction; power assist reduces effort at the wheel.
+S-6036,Suspension System,"Springs, dampers and linkages absorb road shock and keep tyres in contact with the road."
+S-1300,Wheels & Tyres,"Provide grip, carry vehicle load and transmit traction and braking forces to the road."
+S-9234,Chassis & Body,Structural frame and panels that support all components and protect occupants in a crash.
+S-9876,Safety & Restraint System,"Seat belts, airbags and crash sensors that protect occupants during impact."
+S-5957,Driver Assistance (ADAS),"Cameras, radar and software for cruise control, lane keeping, parking aid and collision warning."
+S-5821,HVAC (Climate Control),"Heats, cools, ventilates and defogs the cabin for comfort and visibility."
+S-0692,Lighting & Signalling,"Headlights, indicators and brake lights for visibility and communicating intent."
+S-0659,Infotainment & Telematics,"Audio, navigation, connectivity and vehicle data communication."
+S-8766,Onboard Computers & Sensors (ECU/CAN bus),"Monitor and control engine, transmission and body functions; run diagnostics over the CAN network."

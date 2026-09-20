@@ -1,0 +1,11 @@
+﻿id,name,function
+P-4827,Crankshaft,Converts the reciprocating motion of the pistons into rotational motion that drives the transmission
+P-1093,Camshaft,Rotates lobes that open and close the intake and exhaust valves in time with piston movement
+P-7561,Piston,Transfers the force of expanding combustion gases to the connecting rod and crankshaft
+P-2348,Alternator,Driven by the engine belt to generate electrical power and recharge the battery
+P-9072,Radiator,"Dissipates heat from engine coolant to the air, keeping operating temperature in range"
+P-3615,Fuel Injector,"Sprays a metered, atomized amount of fuel into the intake port or cylinder for combustion"
+P-8204,Brake Caliper,Clamps the brake pads against the rotor using hydraulic pressure to slow the wheel
+P-5739,Shock Absorber,Damps spring oscillation from road inputs to keep the tire in contact with the road
+P-6481,Catalytic Converter,Uses precious-metal catalysts to convert exhaust pollutants into less harmful gases
+P-0956,Connecting Rod,Changes the up-and-down (reciprocating) movement of the piston into the circular (rotary) rotation of the crankshaft

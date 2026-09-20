@@ -1,0 +1,16 @@
+﻿id,name,street_number,street_name,unit,province,city,postal_code,country,email,phone_number
+SUP-0101,Maple Ridge Industrial Supply,1450,Robson Street,Suite 210,BC,Vancouver,V6G 1C2,Canada,orders@mapleridgesupply.ca,+1 (604) 555-0142
+SUP-0102,Northern Lights Packaging Inc.,88,Queen Street West,Unit 5,ON,Toronto,M5H 2N2,Canada,sales@nlpackaging.ca,+1 (416) 555-0187
+SUP-0103,Fleuve St-Laurent Matériaux,720,Rue Sherbrooke Ouest,,QC,Montreal,H3A 1G1,Canada,info@fslmateriaux.ca,+1 (514) 555-0163
+SUP-0104,Prairie Grain Distributors Ltd.,305,Broadway Avenue,Suite 400,SK,Saskatoon,S7N 1B3,Canada,contact@prairiegrain.ca,+1 (306) 555-0119
+SUP-0105,Rocky Mountain Tool & Fastener,1212,11 Avenue SW,Bay 3,AB,Calgary,T3C 0M5,Canada,orders@rmtoolfast.ca,+1 (403) 555-0178
+SUP-0106,Atlantic Coast Seafood Traders,64,Barrington Street,Unit 12,NS,Halifax,B3J 1Y9,Canada,sales@atlanticseafood.ca,+1 (902) 555-0134
+SUP-0107,Red River Office Solutions,233,Portage Avenue,Suite 900,MB,Winnipeg,R3B 2A6,Canada,info@redriveroffice.ca,+1 (204) 555-0156
+SUP-0108,Bay of Fundy Logistics,410,King Street,,NB,Saint John,E2L 1J2,Canada,dispatch@fundylogistics.ca,+1 (506) 555-0192
+SUP-0109,Capital Region Electrical Wholesale,175,Bank Street,Unit 8,ON,Ottawa,K2P 1W6,Canada,orders@creelectrical.ca,+1 (613) 555-0147
+SUP-0110,Okanagan Valley Produce Co.,2890,Pandosy Street,,BC,Kelowna,V1Y 1V4,Canada,sales@okvalleyproduce.ca,+1 (250) 555-0128
+SUP-0111,Laurentides Bois et Pièces,55,Boulevard Labelle,Suite 120,QC,Saint-Jérôme,J7Z 5L8,Canada,info@laurentidesbois.ca,+1 (450) 555-0171
+SUP-0112,Steel City Fabrication Ltd.,1029,Barton Street East,Bay 7,ON,Hamilton,L8H 2W1,Canada,quotes@steelcityfab.ca,+1 (905) 555-0165
+SUP-0113,Yellowhead Safety Equipment,10320,104 Avenue NW,Unit 22,AB,Edmonton,T5J 4H3,Canada,orders@yellowheadsafety.ca,+1 (780) 555-0183
+SUP-0114,Avalon Marine Parts Inc.,18,Water Street,,NL,St. John's,A1C 1A5,Canada,parts@avalonmarine.ca,+1 (709) 555-0139
+SUP-0115,Island Breeze Beverage Supply,77,Grafton Street,Suite 5,PE,Charlottetown,C1A 1K8,Canada,sales@islandbreezebev.ca,+1 (902) 555-0151

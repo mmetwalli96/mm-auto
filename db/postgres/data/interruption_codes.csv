@@ -1,0 +1,11 @@
+﻿code,reason,category,severity
+CR-0741,Capacity shortfall,Capacity,High
+CR-1097,Tooling maintenance,Equipment,Medium
+CR-2540,Labour shortage,Workforce,High
+CR-3178,Unplanned machine breakdown,Equipment,High
+CR-4821,Raw material delay,Supply chain,High
+CR-5203,Changeover / setup time overrun,Process,Low
+CR-6034,Quality rework / scrap,Quality,Medium
+CR-7365,Power / utility outage,Facility,High
+CR-8912,Operator training gap,Workforce,Low
+CR-9456,Planned preventive maintenance,Equipment,Low

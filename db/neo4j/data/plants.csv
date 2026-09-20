@@ -1,0 +1,11 @@
+﻿id,name,street_number,street_name,unit,city,province,postal_code,country
+PLT-0101,Maple Ridge Plant,1450,Industrial Ave,Unit 3,Toronto,ON,M5V 2T6,Canada
+PLT-0102,Lakeshore Works,88,Lakeshore Blvd W,,Hamilton,ON,L8P 1A1,Canada
+PLT-0103,Saint-Laurent Facility,2750,Rue Thimens,Suite 200,Montreal,QC,H4R 1S6,Canada
+PLT-0104,Fraser Valley Plant,6310,Marine Dr,,Burnaby,BC,V5J 4S5,Canada
+PLT-0105,Prairie North Plant,1215,58 Ave SE,Bay 12,Calgary,AB,T2H 2C9,Canada
+PLT-0106,Red River Plant,940,Nairn Ave,,Winnipeg,MB,R2L 0Y1,Canada
+PLT-0107,Bay of Fundy Plant,310,Chesley Dr,Unit 5,Saint John,NB,E2K 5L5,Canada
+PLT-0108,Halifax Harbour Plant,175,Wright Ave,,Dartmouth,NS,B3B 1G4,Canada
+PLT-0109,Saskatoon Processing,2201,Faithfull Ave,Unit 8,Saskatoon,SK,S7K 8H4,Canada
+PLT-0110,Ottawa Valley Plant,1050,Baxter Rd,,Ottawa,ON,K2C 3P1,Canada

@@ -1,0 +1,11 @@
+incident,interruption,incident_date,description,est_resolution_date,status
+IN-0001,CR-3178,2025-01-14 8:30,Unplanned stoppage on Line 3 due to conveyor motor failure,2025-01-15 17:00,Resolved
+IN-0002,CR-4821,2025-02-02 6:15,Steel stock delayed from supplier halting the stamping line,2025-02-05 12:00,Resolved
+IN-0003,CR-6034,2025-02-20 10:00,Excessive weld defects detected on Body Shop line 2 triggering rework,2025-02-21 9:00,Resolved
+IN-0004,CR-1097,2025-03-05 7:00,Scheduled tooling maintenance on Line 5 press,2025-03-05 15:00,Resolved
+IN-0005,CR-2540,2025-03-18 6:00,Second shift understaffed due to unplanned absences,2025-03-20 7:00,Resolved
+IN-0006,CR-7365,2025-04-01 13:45,Regional power outage affected Plant 2 operations,2025-04-01 20:00,Resolved
+IN-0007,CR-5203,2025-04-22 9:10,Changeover between trim packages took longer than allotted,2025-04-22 11:30,Resolved
+IN-0008,CR-8912,2025-05-09 8:00,New operators required additional safety training before line restart,2025-05-09 16:00,Resolved
+IN-0009,CR-9456,2025-05-27 5:30,Planned preventive maintenance window on Line 1 robots,2025-05-27 13:00,Resolved
+IN-0010,CR-3178,2025-06-10 11:20,Recurring conveyor motor fault on Line 3,2025-06-12 10:00,Resolved

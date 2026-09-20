@@ -1,0 +1,22 @@
+incident,event_date,event_description,uri
+IN-0001,2025-01-14 9:00,Maintenance team dispatched to inspect conveyor motor,
+IN-0001,2025-01-14 14:30,Replacement motor installed and tested,
+IN-0001,2025-01-15 17:00,Line 3 conveyor restored to full operation,s3://factory-automation-incidents/incident-1-report.pdf
+IN-0002,2025-02-02 7:00,Contacted supplier for expedited shipment,
+IN-0002,2025-02-04 10:00,Partial shipment received stamping line resumed at reduced rate,
+IN-0002,2025-02-05 12:00,Full stock replenished stamping line back to normal capacity,s3://factory-automation-incidents/incident-2-report.pdf
+IN-0003,2025-02-20 11:00,Quality team quarantined affected weld batch,
+IN-0003,2025-02-21 9:00,Root cause identified as miscalibrated welding robot and recalibrated,s3://factory-automation-incidents/incident-3-report.pdf
+IN-0004,2025-03-05 15:00,Tooling replaced and press validated for production,
+IN-0005,2025-03-18 6:30,Supervisor reallocated staff from Line 4 to cover shortage,
+IN-0005,2025-03-19 8:00,Temporary agency workers requested for remainder of week,
+IN-0005,2025-03-20 7:00,Temporary staff onboarded and second shift fully staffed; incident closed,
+IN-0006,2025-04-01 15:00,Backup generators engaged for critical systems,
+IN-0006,2025-04-01 20:00,Utility power restored and full production resumed,s3://factory-automation-incidents/incident-6-report.pdf
+IN-0007,2025-04-22 11:30,Changeover completed and line restarted,
+IN-0008,2025-05-09 12:00,Safety training session completed for new hires,
+IN-0008,2025-05-09 16:00,Operators cleared to resume line work,s3://factory-automation-incidents/incident-8-report.pdf
+IN-0009,2025-05-27 13:00,Preventive maintenance completed and robots recalibrated,
+IN-0010,2025-06-10 12:00,Engineering team investigating recurring motor fault,
+IN-0010,2025-06-11 9:00,Root cause analysis ongoing with vibration sensors installed for monitoring,
+IN-0010,2025-06-12 10:00,Vibration data confirmed bearing wear; motor bearing replaced and Line 3 restored,s3://factory-automation-incidents/incident-10-report.pdf
