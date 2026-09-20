@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@langchain/anthropic": "^1.5.10",
+    "@langchain/classic": "^1.0.48",
     "@langchain/core": "^1.2.12",
     "@langchain/langgraph": "^1.4.16",
     "@langchain/neo4j": "^0.1.20",
