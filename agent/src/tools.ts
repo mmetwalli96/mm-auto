@@ -1,6 +1,9 @@
 import { tool } from "@langchain/core/tools";
 import { neo4jGraph } from "./utils/neo4j";
+import { SqlToolkit } from "@langchain/classic/agents/toolkits/sql";
 import { z } from "zod";
+import { sqlDatabase } from "./utils/postgres";
+import { llm } from "./llm";
 
 const neo4jTool = tool(
   async ({ cypher }: { cypher: string }) => {
@@ -23,6 +26,9 @@ const neo4jTool = tool(
   },
 );
 
-const tools = [neo4jTool];
+const sqlToolkit = new SqlToolkit(sqlDatabase, llm);
+const tools = [neo4jTool, ...sqlToolkit.getTools()];
+
+
 
 export { tools };
