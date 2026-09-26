@@ -1,214 +1,79 @@
-const NEO4J_SCHEMA = `
-// ============================================================
-// Factory automation graph schema and data load
-// ============================================================
+const DETECT_SYSTEM_PROMPT = `
+You are an AI assistant for an automotive manufacturing company. You have tools to access two databases: Neo4j and PostgreSQL.
 
+Neo4j schema:
 
-// ------------------------------------------------------------
-// 1. Constraints (also create the backing indexes)
-// ------------------------------------------------------------
+                 ┌──────────┐               ┌──────────┐
+                 │ Material │               │   Car    │
+                 └──────────┘               └──────────┘
+                      ▲                          │
+                   MADE_OF                      USES
+                      │                          ▼
+┌──────────┐  SUPPLIES  ┌──────────┐ COMPONENT_OF ┌──────────┐
+│ Supplier │ ─────────> │   Part   │ ───────────> │  System  │
+└──────────┘            └──────────┘              └──────────┘
+ SUPPLIES: qty, cpu, currency,  ▲                       ▲
+ start_date, end_date, uri,     │ PRODUCES   ASSEMBLES  │
+ interruption_code              └──────┌──────┐─────────┘
+                                       │ Line │
+                                       └──────┘
+                                        ▲    │ IN
+                                     AT │    ▼
+┌──────────┐ ASSIGNED_TO ┌─────────┐  ┌───────┐
+│ Employee │ ──────────> │ Station │  │ Plant │
+└──────────┘             └─────────┘  └───────┘
+   │   └────────────── DIRECTS ────────────▲
+   │ SCHEDULED_FOR
+   ▼
+┌───────┐
+│ Shift │
+└───────┘
 
+PostgreSQL schema:
 
-CREATE CONSTRAINT car_id IF NOT EXISTS FOR (c:Car) REQUIRE c.id IS UNIQUE;
-CREATE CONSTRAINT system_id IF NOT EXISTS FOR (s:System) REQUIRE s.id IS UNIQUE;
-CREATE CONSTRAINT part_id IF NOT EXISTS FOR (p:Part) REQUIRE p.id IS UNIQUE;
-CREATE CONSTRAINT material_id IF NOT EXISTS FOR (m:Material) REQUIRE m.id IS UNIQUE;
-CREATE CONSTRAINT plant_id IF NOT EXISTS FOR (pl:Plant) REQUIRE pl.id IS UNIQUE;
-CREATE CONSTRAINT line_id IF NOT EXISTS FOR (l:Line) REQUIRE l.id IS UNIQUE;
-CREATE CONSTRAINT station_id IF NOT EXISTS FOR (st:Station) REQUIRE st.id IS UNIQUE;
-CREATE CONSTRAINT shift_id IF NOT EXISTS FOR (sh:Shift) REQUIRE sh.id IS UNIQUE;
-CREATE CONSTRAINT employee_id IF NOT EXISTS FOR (e:Employee) REQUIRE e.id IS UNIQUE;
-CREATE CONSTRAINT supplier_id IF NOT EXISTS FOR (su:Supplier) REQUIRE su.id IS UNIQUE;
+┌─────────────────────────┐
+│ interruption_codes      │
+│ id, code (unique),      │
+│ reason, category,       │
+│ severity                │
+└─────────────────────────┘
+            ▲ code
+            │
+┌─────────────────────────┐
+│ incident_history        │
+│ id, incident (unique),  │
+│ interruption, occurance_│
+│ time, description,      │
+│ resolution_date, status │
+└─────────────────────────┘
+            ▲ incident
+            │
+┌─────────────────────────┐
+│ progress_tracker        │
+│ id, incident,           │
+│ event_time,             │
+│ event_description, uri  │
+└─────────────────────────┘
 
+Steps:
 
-// ------------------------------------------------------------
-// 2. Nodes
-// ------------------------------------------------------------
+1. Check the interruption_code on the SUPPLIES relationships in Neo4j and pick up each code.
 
-LOAD CSV WITH HEADERS FROM 'file:///cars.csv' AS row
-MERGE (c:Car {id: row.id})
-SET c.model = row.model, c.year = toInteger(row.year), c.trim = row.trim;
+2. Match the code in interruption_codes in PostgreSQL and verify it is for a supply shortfall.
 
-LOAD CSV WITH HEADERS FROM 'file:///systems.csv' AS row
-MERGE (s:System {id: row.id})
-SET s.name = row.name, s.functionality = row.functionality;
+3. If it is, check its status in incident_history:
+   - Resolved: move on to the next SUPPLIES relationship with an interruption code.
+   - In Progress: check the latest progress in progress_tracker, then add a row to this table:
 
-LOAD CSV WITH HEADERS FROM 'file:///parts.csv' AS row
-MERGE (p:Part {id: row.id})
-SET p.name = row.name, p.function = row.function;
+| incident-id | part-id | name | qty-short | occurance-date |
 
-LOAD CSV WITH HEADERS FROM 'file:///materials.csv' AS row
-MERGE (m:Material {id: row.id})
-SET m.name = row.name;
+Notes: 
+- qty-short can be taken from the incident description.
+- when the interruption code is not found in interruption_codes, that means there is not shortage recorded for this supply. 
 
-LOAD CSV WITH HEADERS FROM 'file:///plants.csv' AS row
-MERGE (pl:Plant {id: row.id})
-SET pl.name = row.name, pl.street_number = row.street_number, pl.street_name = row.street_name,
-    pl.unit = row.unit, pl.city = row.city, pl.province = row.province,
-    pl.postal_code = row.postal_code, pl.country = row.country;
-
-LOAD CSV WITH HEADERS FROM 'file:///lines.csv' AS row
-MERGE (l:Line {id: row.id});
-
-LOAD CSV WITH HEADERS FROM 'file:///stations.csv' AS row
-MERGE (st:Station {id: row.id});
-
-LOAD CSV WITH HEADERS FROM 'file:///shifts.csv' AS row
-MERGE (sh:Shift {id: row.id})
-SET sh.start = row.start, sh.end = row.end, sh.day = row.day, sh.name = row.name;
-
-LOAD CSV WITH HEADERS FROM 'file:///organization_directory.csv' AS row
-MERGE (e:Employee {id: row.id})
-SET e.first_name = row.first_name, e.last_name = row.last_name, e.phone = row.phone,
-    e.email = row.email, e.street_number = row.street_number, e.street_name = row.street_name,
-    e.unit = row.unit, e.city = row.city, e.province = row.province,
-    e.postal_code = row.postal_code, e.country = row.country, e.role = row.role,
-    e.start_date = row.start_date;
-
-LOAD CSV WITH HEADERS FROM 'file:///suppliers.csv' AS row
-MERGE (su:Supplier {id: row.id})
-SET su.name = row.name, su.street_number = row.street_number, su.street_name = row.street_name,
-    su.unit = row.unit, su.province = row.province, su.city = row.city,
-    su.postal_code = row.postal_code, su.country = row.country, su.email = row.email,
-    su.phone_number = row.phone_number;
-
-
-// ------------------------------------------------------------
-// 3. Relationships
-// ------------------------------------------------------------
-
-// Car -[:USES]-> System
-LOAD CSV WITH HEADERS FROM 'file:///uses.csv' AS row
-MATCH (c:Car {id: row.car})
-MATCH (s:System {id: row.system})
-MERGE (c)-[r:USES {id: row.id}]->(s);
-
-// Line -[:ASSEMBLES]-> System
-LOAD CSV WITH HEADERS FROM 'file:///assemble.csv' AS row
-MATCH (l:Line {id: row.line})
-MATCH (s:System {id: row.system})
-MERGE (l)-[r:ASSEMBLES {id: row.id}]->(s)
-SET r.name = row.name, r.qty = toInteger(row.qty), r.cpu = toFloat(row.cpu), r.currency = row.currency,
-    r.start_date = row.start_date, r.end_date = row.end_date;
-
-// Part -[:COMPONENT_OF]-> System
-LOAD CSV WITH HEADERS FROM 'file:///component_of.csv' AS row
-MATCH (p:Part {id: row.part})
-MATCH (s:System {id: row.system})
-MERGE (p)-[r:COMPONENT_OF {id: row.id}]->(s);
-
-// Part -[:MADE_OF]-> Material
-LOAD CSV WITH HEADERS FROM 'file:///made_of.csv' AS row
-MATCH (p:Part {id: row.part})
-MATCH (m:Material {id: row.material})
-MERGE (p)-[r:MADE_OF {id: row.id}]->(m);
-
-// Line -[:PRODUCES]-> Part
-LOAD CSV WITH HEADERS FROM 'file:///produce.csv' AS row
-MATCH (l:Line {id: row.line})
-MATCH (p:Part {id: row.product})
-MERGE (l)-[r:PRODUCES {id: row.id}]->(p)
-SET r.name = row.name, r.qty = toInteger(replace(row.qty, ',', '')), r.cpu = toFloat(row.cpu), r.currency = row.currency,
-    r.start_date = row.start_date, r.end_date = row.end_date;
-
-// Supplier -[:SUPPLIES]-> Part
-LOAD CSV WITH HEADERS FROM 'file:///supply.csv' AS row
-MATCH (su:Supplier {id: row.supplier})
-MATCH (p:Part {id: row.part})
-MERGE (su)-[r:SUPPLIES {id: row.id}]->(p)
-SET r.qty = toInteger(row.qty), r.cpu = toFloat(row.cpu), r.currency = row.currency,
-    r.start_date = row.start_date, r.end_date = row.end_date, r.uri = row.uri, r.interruption_code = row.interruption_code;
-
-// Station -[:AT]-> Line
-LOAD CSV WITH HEADERS FROM 'file:///at.csv' AS row
-MATCH (st:Station {id: row.station})
-MATCH (l:Line {id: row.line})
-MERGE (st)-[r:AT {id: row.id}]->(l);
-
-// Line -[:IN]-> Plant
-LOAD CSV WITH HEADERS FROM 'file:///in.csv' AS row
-MATCH (l:Line {id: row.line})
-MATCH (pl:Plant {id: row.plant})
-MERGE (l)-[r:IN {id: row.id}]->(pl);
-
-// Employee -[:DIRECTS]-> Plant
-LOAD CSV WITH HEADERS FROM 'file:///direct.csv' AS row
-MATCH (e:Employee {id: row.director})
-MATCH (pl:Plant {id: row.plant})
-MERGE (e)-[r:DIRECTS {id: row.id}]->(pl)
-SET r.start_date = row.start_date;
-
-// Employee -[:ASSIGNED_TO]-> Station
-LOAD CSV WITH HEADERS FROM 'file:///assigned_to.csv' AS row
-MATCH (e:Employee {id: row.worker})
-MATCH (st:Station {id: row.station})
-MERGE (e)-[r:ASSIGNED_TO {id: row.id}]->(st);
-
-// Employee -[:SCHEDULED_FOR]-> Shift
-LOAD CSV WITH HEADERS FROM 'file:///scheduled_for.csv' AS row
-MATCH (e:Employee {id: row.worker})
-MATCH (sh:Shift {id: row.shift})
-MERGE (e)-[r:SCHEDULED_FOR {id: row.id}]->(sh);
-
-`
-
-const SQL_SCHEMA = `
-CREATE TABLE IF NOT EXISTS interruption_codes (
-    id SERIAL PRIMARY KEY,
-    code VARCHAR(50) UNIQUE NOT NULL,
-    reason TEXT NOT NULL,
-    category VARCHAR(50) NOT NULL,
-    severity VARCHAR(50) NOT NULL,
-
-    CHECK (severity IN ('Low', 'Medium', 'High'))
-);
-
-CREATE TABLE IF NOT EXISTS incident_history (
-    id SERIAL PRIMARY KEY,
-    incident VARCHAR(50) UNIQUE NOT NULL,
-    interruption VARCHAR(50) NOT NULL,
-    occurance_time TIMESTAMP NOT NULL,
-    description TEXT NOT NULL,
-    resolution_date TIMESTAMP DEFAULT NULL,
-    status VARCHAR(50) NOT NULL DEFAULT 'In Progress',
-    CHECK (status IN ('In Progress', 'Resolved')),
-    FOREIGN KEY (interruption) REFERENCES interruption_codes(code)
-);
-
-CREATE TABLE IF NOT EXISTS progress_tracker (
-    id SERIAL PRIMARY KEY,
-    incident VARCHAR(50) NOT NULL,
-    event_time TIMESTAMP NOT NULL,
-    event_description TEXT NOT NULL,
-    uri TEXT DEFAULT NULL,
-    FOREIGN KEY (incident) REFERENCES incident_history(incident)
-);
-`
-
-const SYSTEM_PROMPT = `
-You are a helpful AI Assistant in an automobile factory.
-
-Your task is to detect a supply short fall in the factory. You have access to Neo4j and PostgreSQL databases. 
-
-Here are the databases schema details:
-
-Neo4j: ${NEO4J_SCHEMA}\n
----\n
-PostgreSQL: ${SQL_SCHEMA}\n
-
-If a shortfall is detected Provide these information:
-- The part id
-- The part name
-- The supplier id
-- The supplier name
-- The date of the shortfall
-
-If no shortfall is detected, provide a message indicating that all parts are sufficiently supplied.
-
-The shortfall can be found in the relationship supply in the property interruption_code. If it is a blank value, it indicates that there is no shortfall for that supply.
-
+Return 'NO SHORTFALL DETECTED' if no supply shortfall is detected.
 `
 
 
 
-export { SYSTEM_PROMPT };
+export { DETECT_SYSTEM_PROMPT };
