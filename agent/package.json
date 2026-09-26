@@ -18,11 +18,13 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "@agendajs/mongo-backend": "^4.0.3",
     "@langchain/anthropic": "^1.5.10",
     "@langchain/classic": "^1.0.48",
     "@langchain/core": "^1.2.12",
     "@langchain/langgraph": "^1.4.16",
     "@langchain/neo4j": "^0.1.20",
+    "agenda": "^6.2.6",
     "langchain": "^1.5.11",
     "pg": "^8.23.0",
     "typeorm": "^1.1.1",
