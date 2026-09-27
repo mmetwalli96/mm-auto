@@ -1,5 +1,5 @@
 import { tools } from "./tools";
-import { llm } from "./llm";
+import { llm } from "./utils/llm";
 import { createAgent } from "langchain";
 import { DETECT_SYSTEM_PROMPT } from "./prompts";
 
