@@ -1,4 +1,4 @@
-incident,interruption,incident_date,description,est_resolution_date,status
+incident,interruption,incident_date,description,resolution_date,status
 IN-0001,CR-3178,2025-01-14 8:30,Unplanned stoppage on Line 3 due to conveyor motor failure,2025-01-15 17:00,Resolved
 IN-0002,CR-4821,2025-02-02 6:15,Steel stock delayed from supplier halting the stamping line,2025-02-05 12:00,Resolved
 IN-0003,CR-6034,2025-02-20 10:00,Excessive weld defects detected on Body Shop line 2 triggering rework,2025-02-21 9:00,Resolved
