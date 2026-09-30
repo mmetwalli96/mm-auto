@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # start the docker container mm-auto
 docker run --rm -d --name mm-neo4j -p 7474:7474 -p 7687:7687 -v $(pwd)/db/neo4j/data:/import --env NEO4J_AUTH=none neo4j:latest
