@@ -6,6 +6,8 @@ const llmConfig = {
   model: process.env.MODEL!,
   apiKey: process.env.DEEPSEEK_API_KEY!,
   anthropicApiUrl: process.env.BASE_URL!,
+  temperature: parseInt(process.env.TEMPERATURE!),
+  maxRetries: parseInt(process.env.RETRY_COUNT!),
 };
 
 const dbConfig = {

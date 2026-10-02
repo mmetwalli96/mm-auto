@@ -1,13 +1,17 @@
-import { agent } from "./agent";
 import { Agenda, Job } from "agenda";
 import { MongoBackend } from "@agendajs/mongo-backend";
-import { dbConfig } from "./utils/config";
 import { HumanMessage } from "@langchain/core/messages";
+
+import { detector } from "./graphs/detect/agent";
+import { dbConfig } from "./utils/config";
+import { saveGraphAsPng } from "./utils/save-graph";
 
 type DetectData = { question: string; answer?: string };
 
-const question = "Is there a supply shortfall in the factory?";
+const userQuestion = "Detect supply shortfall to create detection record if it exists.";
 const mongodbAddress = `mongodb://${dbConfig.mongo.username}:${dbConfig.mongo.password}@${dbConfig.mongo.host}:${dbConfig.mongo.port}/${dbConfig.mongo.database}?authSource=admin`;
+
+saveGraphAsPng(detector, "../resources/imgs/graphs/detector.png");
 
 const agenda = new Agenda({
   backend: new MongoBackend({
@@ -17,7 +21,7 @@ const agenda = new Agenda({
 
 agenda.define("detect", async (job: Job<DetectData>) => {
   const { question } = job.attrs.data;
-  const result = await agent.invoke({
+  const result = await detector.invoke({
     messages: [new HumanMessage(question)],
   });
 
@@ -34,7 +38,7 @@ agenda.on("fail:detect", (error, job) => {
 await agenda.start();
 
 try {
-  await agenda.every("2 minutes", "detect", { question });
+  await agenda.every("2 minutes", "detect", { question: userQuestion });
 } catch (error) {
   console.error("Failed to schedule job:", error);
 }

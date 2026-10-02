@@ -5,6 +5,7 @@ const llm = new ChatAnthropic({
   model: llmConfig.model,
   apiKey: llmConfig.apiKey,
   anthropicApiUrl: llmConfig.anthropicApiUrl,
+  temperature: llmConfig.temperature,
 });
 
 export { llm };
