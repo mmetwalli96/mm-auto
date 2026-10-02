@@ -18,6 +18,7 @@ import { llm } from "../../utils/llm";
 import { AgentState } from "./state";
 import { SHORTFALL_STATUS_PROMPT, DETECTION_PROMPT } from "./prompts";
 import { DetectionSchema } from "../../schemas/detect";
+import { llmConfig } from "../../utils/config";
 
 const llmWithTools = llm.bindTools(tools);
 
@@ -62,7 +63,7 @@ const parseShortfallStatusNode: GraphNode<typeof AgentState> = async (
       llmCalls: 1,
       messages: [
         new HumanMessage(
-          `Failed to parse shortfall status ${error}. ${response.text} correct it`,
+          `Failed to parse shortfall status ${error}. ${response.text} correct it, here is the schema: ${JSON.stringify(schema.toJSONSchema())}`,
         ),
       ],
     };
@@ -90,7 +91,7 @@ const parseDetectionRecordsNode: GraphNode<typeof AgentState> = async (
   const schema = z.array(DetectionSchema);
   const systemMessage = new SystemMessage(
     `From the previous response, extract the detection records in JSON format.
-    ${JSON.stringify(DetectionSchema.toJSONSchema)}
+    ${JSON.stringify(DetectionSchema.toJSONSchema())}
     Clean and return only the JSON array of detection records.`,
   );
 
@@ -110,7 +111,7 @@ const parseDetectionRecordsNode: GraphNode<typeof AgentState> = async (
       llmCalls: 1,
       messages: [
         new HumanMessage(
-          `Failed to parse detection records. ${error}. ${response.text} correct it`,
+          `Failed to parse detection records. ${error}. ${response.text} correct it, here is the schema: ${JSON.stringify(DetectionSchema.toJSONSchema())}`,
         ),
       ],
     };
@@ -220,6 +221,6 @@ const detectAgent = new StateGraph(AgentState)
     "createDetectionRecordsNode",
     END,
   ])
-  .compile();
+  .compile().withConfig({recursionLimit: llmConfig.recursionLimit});
 
 export { detectAgent as detector };
