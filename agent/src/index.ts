@@ -30,16 +30,15 @@ agenda.define("detect", async (job: Job<DetectData>) => {
     recursionLimit: recursionLimit,
   };
 
-  const result = await detector.invoke(
+  const response = await detector.invoke(
     {
       messages: [new HumanMessage(question)],
     },
     detectionConfig,
   );
 
-  const content = result.messages.at(-1)?.content;
-  job.attrs.data.answer =
-    typeof content === "string" ? content : JSON.stringify(content);
+  const detections = response.detections;
+  job.attrs.data.answer = detections.length > 0 ? JSON.stringify(detections, null, 2) : "No detections found";
   await job.save();
 });
 
