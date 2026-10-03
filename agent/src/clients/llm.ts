@@ -1,5 +1,5 @@
 import { ChatAnthropic } from "@langchain/anthropic";
-import { llmConfig } from "./config";
+import { llmConfig } from "@config";
 
 const llm = new ChatAnthropic({
   model: llmConfig.model,

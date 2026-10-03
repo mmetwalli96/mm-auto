@@ -1,9 +1,9 @@
 import { DataSource } from "typeorm";
 import { SqlDatabase } from "@langchain/classic/sql_db";
 
-import { dbConfig } from "./config";
+import { dbConfig } from "@config";
 
-export const postgresDataSource = new DataSource({
+const postgresDataSource = new DataSource({
     type: "postgres",
     host: dbConfig.postgres.host,
     port: dbConfig.postgres.port,
@@ -16,4 +16,4 @@ const sqlDatabase = await SqlDatabase.fromDataSourceParams({
     appDataSource: postgresDataSource,
 });
 
-export { sqlDatabase };
+export { sqlDatabase, postgresDataSource };

@@ -3,10 +3,9 @@ import { MongoBackend } from "@agendajs/mongo-backend";
 import { HumanMessage } from "@langchain/core/messages";
 import { randomUUID } from "crypto";
 
-import { detector } from "./graphs/detect/agent";
-import { dbConfig } from "./utils/config";
-import { saveGraphAsPng } from "./utils/save-graph";
-import { llmConfig } from "./utils/config";
+import { detector } from "@graphs";
+import { dbConfig, llmConfig } from "@config";
+import { saveGraphAsPng } from "@utils";
 
 type DetectData = { question: string; answer?: string };
 

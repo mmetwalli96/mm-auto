@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 import { MongoDBSaver } from "@langchain/langgraph-checkpoint-mongodb";
 
-import { dbConfig } from "../../utils/config";
+import { dbConfig } from "@config";
 
 const mongoAddress = `mongodb://${dbConfig.mongo.username}:${dbConfig.mongo.password}@${dbConfig.mongo.host}:${dbConfig.mongo.port}/${dbConfig.mongo.database.agent}?authSource=admin`;
 const checkpointCollectionName = "detector_checkpoints";

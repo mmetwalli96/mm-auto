@@ -3,9 +3,9 @@ import { StructuredToolInterface } from "@langchain/core/tools";
 import { SqlToolkit } from "@langchain/classic/agents/toolkits/sql";
 import { z } from "zod";
 
-import { neo4jGraph } from "../../utils/neo4j";
-import { sqlDatabase } from "../../utils/postgres";
-import { llm } from "../../utils/llm";
+import { neo4jGraph } from "@clients";
+import { sqlDatabase } from "@clients";
+import { llm } from "@clients";
 
 const neo4jTool = tool(
   async ({ cypher }: { cypher: string }) => {
@@ -66,7 +66,7 @@ const subtract = tool(({ a, b }) => a - b, {
 
 const sqlToolKit = new SqlToolkit(sqlDatabase, llm);
 
-const combineedTools: StructuredToolInterface[] = [
+const combinedTools: StructuredToolInterface[] = [
   neo4jTool,
   add,
   multiply,
@@ -75,7 +75,7 @@ const combineedTools: StructuredToolInterface[] = [
   ...sqlToolKit.getTools(),
 ];
 const toolsByName: Record<string, StructuredToolInterface> = Object.fromEntries(
-  combineedTools.map((tool) => [tool.name, tool]),
+  combinedTools.map((tool) => [tool.name, tool]),
 );
 const tools = Object.values(toolsByName);
 

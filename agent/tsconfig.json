@@ -16,7 +16,14 @@
     "allowJs": true,
     "strict": true,
     "strictFunctionTypes": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@graphs": ["./src/graphs"],
+      "@config": ["./src/config"],
+      "@utils": ["./src/utils"],
+      "@clients": ["./src/clients"]
+    }
   },
   "include": ["**/*.ts", "**/*.js"],
   "exclude": ["node_modules", "dist"]
