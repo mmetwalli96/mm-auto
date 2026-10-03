@@ -1,0 +1,1 @@
+export { detector } from "@/graphs/detect/agent";
