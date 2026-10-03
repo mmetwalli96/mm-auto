@@ -18,7 +18,7 @@ import { llm } from "../../utils/llm";
 import { AgentState } from "./state";
 import { SHORTFALL_STATUS_PROMPT, DETECTION_PROMPT } from "./prompts";
 import { DetectionSchema } from "../../schemas/detect";
-import { llmConfig } from "../../utils/config";
+import { checkpointer } from "./checkpointer";
 
 const llmWithTools = llm.bindTools(tools);
 
@@ -111,7 +111,7 @@ const parseDetectionRecordsNode: GraphNode<typeof AgentState> = async (
       llmCalls: 1,
       messages: [
         new HumanMessage(
-          `Failed to parse detection records. ${error}. ${response.text} correct it, here is the schema: ${JSON.stringify(DetectionSchema.toJSONSchema())}`,
+          `Failed to parse detection records. ${error}. ${response.text} correct it, here is the schema: ${JSON.stringify(z.array(DetectionSchema).toJSONSchema())}`,
         ),
       ],
     };
@@ -221,6 +221,6 @@ const detectAgent = new StateGraph(AgentState)
     "createDetectionRecordsNode",
     END,
   ])
-  .compile().withConfig({recursionLimit: llmConfig.recursionLimit});
+  .compile({ checkpointer });
 
 export { detectAgent as detector };

@@ -1,15 +1,18 @@
 import { Agenda, Job } from "agenda";
 import { MongoBackend } from "@agendajs/mongo-backend";
 import { HumanMessage } from "@langchain/core/messages";
+import { randomUUID } from "crypto";
 
 import { detector } from "./graphs/detect/agent";
 import { dbConfig } from "./utils/config";
 import { saveGraphAsPng } from "./utils/save-graph";
+import { llmConfig } from "./utils/config";
 
 type DetectData = { question: string; answer?: string };
 
-const userQuestion = "Detect supply shortfall to create detection record if it exists.";
-const mongodbAddress = `mongodb://${dbConfig.mongo.username}:${dbConfig.mongo.password}@${dbConfig.mongo.host}:${dbConfig.mongo.port}/${dbConfig.mongo.database}?authSource=admin`;
+const userQuestion =
+  "Detect supply shortfall to create detection record if it exists.";
+const mongodbAddress = `mongodb://${dbConfig.mongo.username}:${dbConfig.mongo.password}@${dbConfig.mongo.host}:${dbConfig.mongo.port}/${dbConfig.mongo.database.scheduler}?authSource=admin`;
 
 saveGraphAsPng(detector, "../resources/imgs/graphs/detector.png");
 
@@ -21,9 +24,19 @@ const agenda = new Agenda({
 
 agenda.define("detect", async (job: Job<DetectData>) => {
   const { question } = job.attrs.data;
-  const result = await detector.invoke({
-    messages: [new HumanMessage(question)],
-  });
+  const detectionThreadId = `detect-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`;
+  const recursionLimit = llmConfig.recursionLimit;
+  const detectionConfig = {
+    configurable: { thread_id: detectionThreadId },
+    recursionLimit: recursionLimit,
+  };
+
+  const result = await detector.invoke(
+    {
+      messages: [new HumanMessage(question)],
+    },
+    detectionConfig,
+  );
 
   const content = result.messages.at(-1)?.content;
   job.attrs.data.answer =
