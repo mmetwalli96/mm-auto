@@ -27,9 +27,9 @@
     "@langchain/neo4j": "^0.1.20",
     "agenda": "^6.2.6",
     "langchain": "^1.5.11",
-    "mongodb": "^7.7.0",
+    "mongodb": "^6.21.0",
     "pg": "^8.23.0",
-    "typeorm": "^1.1.1",
+    "typeorm": "^0.3.31",
     "zod": "^4.6.5"
   },
   "devDependencies": {
