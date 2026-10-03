@@ -17,7 +17,7 @@ import { tools, toolsByName } from "@/graphs/detect/tools";
 import { llm } from "@clients";
 import { AgentState } from "@/graphs/detect/state";
 import { SHORTFALL_STATUS_PROMPT, DETECTION_PROMPT } from "@/graphs/detect/prompts";
-import { DetectionSchema } from "@/schemas/detect";
+import { DetectionSchema } from "@schemas";
 import { checkpointer } from "@/graphs/detect/checkpointer";
 
 const llmWithTools = llm.bindTools(tools);

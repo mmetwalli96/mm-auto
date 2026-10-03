@@ -1,7 +1,7 @@
 import { StateSchema, MessagesValue, ReducedValue } from "@langchain/langgraph";
 import { z } from "zod";
 
-import { DetectionSchema } from "../../schemas/detect";
+import { DetectionSchema } from "@schemas";
 
 const AgentState = new StateSchema({
   messages: MessagesValue,

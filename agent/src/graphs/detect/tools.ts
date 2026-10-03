@@ -3,9 +3,7 @@ import { StructuredToolInterface } from "@langchain/core/tools";
 import { SqlToolkit } from "@langchain/classic/agents/toolkits/sql";
 import { z } from "zod";
 
-import { neo4jGraph } from "@clients";
-import { sqlDatabase } from "@clients";
-import { llm } from "@clients";
+import { neo4jGraph, sqlDatabase, llm } from "@clients";
 
 const neo4jTool = tool(
   async ({ cypher }: { cypher: string }) => {

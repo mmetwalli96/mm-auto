@@ -22,7 +22,8 @@
       "@graphs": ["./src/graphs"],
       "@config": ["./src/config"],
       "@utils": ["./src/utils"],
-      "@clients": ["./src/clients"]
+      "@clients": ["./src/clients"],
+      "@schemas": ["./src/schemas"]
     }
   },
   "include": ["**/*.ts", "**/*.js"],

@@ -1,0 +1,1 @@
+export { DetectionSchema } from "@/schemas/detect";
