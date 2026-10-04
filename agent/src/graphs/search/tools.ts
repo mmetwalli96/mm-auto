@@ -1,9 +1,11 @@
 import { tool } from "@langchain/core/tools";
 import { StructuredToolInterface } from "@langchain/core/tools";
 import { SqlToolkit } from "@langchain/classic/agents/toolkits/sql";
+import { TavilySearch } from "@langchain/tavily";
 import { z } from "zod";
 
 import { neo4jGraph, sqlDatabase, llm } from "@clients";
+import { tavilyConfig } from "@config";
 
 const neo4jTool = tool(
   async ({ cypher }: { cypher: string }) => {
@@ -62,6 +64,11 @@ const subtract = tool(({ a, b }) => a - b, {
   }),
 });
 
+const tavilySearch = new TavilySearch({
+  maxResults: tavilyConfig.maxResults,
+  tavilyApiKey: tavilyConfig.apiKey,
+});
+
 const sqlToolKit = new SqlToolkit(sqlDatabase, llm);
 
 const combinedTools: StructuredToolInterface[] = [
@@ -70,6 +77,7 @@ const combinedTools: StructuredToolInterface[] = [
   multiply,
   divide,
   subtract,
+  tavilySearch,
   ...sqlToolKit.getTools(),
 ];
 

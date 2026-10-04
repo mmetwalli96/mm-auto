@@ -10,6 +10,11 @@ const llmConfig = {
   recursionLimit: parseInt(process.env.RECURSION_LIMIT!),
 };
 
+const tavilyConfig = {
+  apiKey: process.env.TAVILY_API_KEY!,
+  maxResults: parseInt(process.env.MAX_RESULTS!),
+};
+
 const dbConfig = {
   postgres: {
     host: process.env.POSTGRES_HOST!,
@@ -37,4 +42,4 @@ const dbConfig = {
   },
 };
 
-export { llmConfig, dbConfig };
+export { llmConfig, dbConfig, tavilyConfig };
