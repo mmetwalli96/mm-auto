@@ -12,4 +12,6 @@ const DetectionSchema = z.object({
   lastEventDate: z.string().nullable().default(null),
 });
 
-export { DetectionSchema };
+type Detection = z.infer<typeof DetectionSchema>;
+
+export { DetectionSchema, Detection };
