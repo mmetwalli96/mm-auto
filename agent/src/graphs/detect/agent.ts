@@ -102,6 +102,7 @@ const parseDetectionRecordsNode: GraphNode<typeof AgentState> = async (
     return {
       detections: parsed,
       messages: [response],
+      llmCalls: 1,
     };
   } catch (error) {
     console.log("Failed to parse detection records from LLM response.", error);
@@ -111,7 +112,7 @@ const parseDetectionRecordsNode: GraphNode<typeof AgentState> = async (
       llmCalls: 1,
       messages: [
         new HumanMessage(
-          `Failed to parse detection records. ${error}. ${response.text} correct it, here is the schema: ${JSON.stringify(z.array(DetectionSchema).toJSONSchema())}`,
+          `Failed to parse detection records. ${error}. ${response.text} correct it, here is the schema: ${JSON.stringify(schema.toJSONSchema())}`,
         ),
       ],
     };
