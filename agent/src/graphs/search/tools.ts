@@ -1,10 +1,9 @@
 import { tool } from "@langchain/core/tools";
 import { StructuredToolInterface } from "@langchain/core/tools";
-import { SqlToolkit } from "@langchain/classic/agents/toolkits/sql";
 import { TavilySearch } from "@langchain/tavily";
 import { z } from "zod";
 
-import { neo4jGraph, sqlDatabase, llm } from "@clients";
+import { neo4jGraph} from "@clients";
 import { tavilyConfig } from "@config";
 
 const neo4jTool = tool(
@@ -28,58 +27,12 @@ const neo4jTool = tool(
   },
 );
 
-const add = tool(({ a, b }) => a + b, {
-  name: "add",
-  description: "Add two numbers",
-  schema: z.object({
-    a: z.number().describe("First number"),
-    b: z.number().describe("Second number"),
-  }),
-});
-
-const multiply = tool(({ a, b }) => a * b, {
-  name: "multiply",
-  description: "Multiply two numbers",
-  schema: z.object({
-    a: z.number().describe("First number"),
-    b: z.number().describe("Second number"),
-  }),
-});
-
-const divide = tool(({ a, b }) => a / b, {
-  name: "divide",
-  description: "Divide two numbers",
-  schema: z.object({
-    a: z.number().describe("First number"),
-    b: z.number().describe("Second number"),
-  }),
-});
-
-const subtract = tool(({ a, b }) => a - b, {
-  name: "subtract",
-  description: "Subtract two numbers",
-  schema: z.object({
-    a: z.number().describe("First number"),
-    b: z.number().describe("Second number"),
-  }),
-});
-
 const tavilySearch = new TavilySearch({
   maxResults: tavilyConfig.maxResults,
   tavilyApiKey: tavilyConfig.apiKey,
 });
 
-const sqlToolKit = new SqlToolkit(sqlDatabase, llm);
-
-const combinedTools: StructuredToolInterface[] = [
-  neo4jTool,
-  add,
-  multiply,
-  divide,
-  subtract,
-  tavilySearch,
-  ...sqlToolKit.getTools(),
-];
+const combinedTools: StructuredToolInterface[] = [neo4jTool, tavilySearch];
 
 const toolsByName: Record<string, StructuredToolInterface> = Object.fromEntries(
   combinedTools.map((tool) => [tool.name, tool]),
