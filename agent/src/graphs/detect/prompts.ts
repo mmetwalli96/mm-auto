@@ -77,8 +77,8 @@ SUPPLIES properties:
   interruption_code  string NULL  -- null or '' when the supply is uninterrupted
 
 Node properties available:
-  Supplier: id, name
-  Part:     id, name
+  Supplier: id, name, street_number, street_name, unit, province, city, postal_code, country, email, phone_number
+  Part:     id, name, function
 `;
 
 const SHORTFALL_STATUS_PROMPT = `
