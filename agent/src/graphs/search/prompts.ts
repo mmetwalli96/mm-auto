@@ -1,33 +1,4 @@
-const DATABASES_SCHEMA = `
-PostgreSQL Schema
-
-interruption_codes
-  id        integer   PK
-  code      text      UNIQUE     -- e.g. 'CR-1097'
-  reason    text
-  category  text                 -- e.g. 'Capacity', 'Workforce', 'Equipment'
-  severity  text
-
-incident_history
-  id               integer   PK
-  incident         text      UNIQUE
-  interruption     text      -- FK -> interruption_codes.code  (the code, NOT the id)
-  occurence_time   timestamp
-  description      text
-  resolution_date  timestamp NULL
-  status           text      -- 'In Progress' | 'Resolved'
-
-progress_tracker
-  id                 integer   PK
-  incident           text      -- FK -> incident_history.incident
-  event_time         timestamp
-  event_description  text
-  uri                text
-
-Column names are spelled exactly as written above.
-
-Neo4j schema:
-
+const NE04J_SCHEMA = `
                  ┌──────────┐               ┌──────────┐
                  │ Material │               │   Car    │
                  └──────────┘               └──────────┘
@@ -102,12 +73,17 @@ Your input is a an array of detection records. Here its structure:
 
 You need to find the suppliers that can provide the parts listed in the detection records.
 
-The schemas of the databases are as follows:
-${DATABASES_SCHEMA}
+The schemas of the neo4j database is as follows:
+${NE04J_SCHEMA}
 
 TASK:
 Find alternative suppliers for the parts listed in the detection records using the Tavily Search tool. For each supplier find its name, contact phone and email, and the address.
 The address should include the street, city, state, and postal code. (e.g., "123 Main St, Springfield, IL, 62701")
+
+STEPS:
+- Review the detection records provided in the input.
+- Search the original suppliers countrys' in Neo4j.
+- Then use the Tavily Search tool to find alternative suppliers in the same countries as the original suppliers reported in the detection records.
 
 OUTPUT FORMAT: (clean JSON)
 [

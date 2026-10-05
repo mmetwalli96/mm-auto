@@ -106,6 +106,15 @@ const useFindSuppliersTools: ConditionalEdgeRouter<typeof AgentState> = async (
   return "parseSuppliersNode";
 };
 
+const shouldFinish: ConditionalEdgeRouter<typeof AgentState> = async (
+  state,
+) => {
+  if (state.suppliers.length > 0) {
+    return END;
+  }
+  return "findSuppliersNode";
+};
+
 const searchAgent = new StateGraph(AgentState)
   .addNode("findSuppliersNode", findSuppliersNode)
   .addNode("parseSuppliersNode", parseSuppliersNode)
@@ -116,7 +125,7 @@ const searchAgent = new StateGraph(AgentState)
     "parseSuppliersNode",
   ])
   .addEdge("findSuppliersToolNode", "findSuppliersNode")
-  .addEdge("parseSuppliersNode", END)
+  .addConditionalEdges("parseSuppliersNode", shouldFinish, ["findSuppliersNode", END])
   .compile({ checkpointer });
 
 export { searchAgent as searcher };
