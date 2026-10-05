@@ -11,4 +11,6 @@ const SuppliersSchema = z.object({
 
 type Supplier = z.infer<typeof SuppliersSchema>;
 
-export { SuppliersSchema, Supplier }
+export { SuppliersSchema }
+
+export type { Supplier };

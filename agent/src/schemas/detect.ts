@@ -14,4 +14,6 @@ const DetectionSchema = z.object({
 
 type Detection = z.infer<typeof DetectionSchema>;
 
-export { DetectionSchema, Detection };
+export { DetectionSchema };
+
+export type { Detection };
