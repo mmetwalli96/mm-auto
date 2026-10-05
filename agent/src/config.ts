@@ -42,4 +42,12 @@ const dbConfig = {
   },
 };
 
-export { llmConfig, dbConfig, tavilyConfig };
+const mailtrapConfig = {
+  token: process.env.MAILTRAP_API_TOKEN!,
+  sender: {
+    email: process.env.MAILTRAP_SENDER_EMAIL!,
+    name: process.env.MAILTRAP_SENDER_NAME!,
+  },
+};
+
+export { llmConfig, dbConfig, tavilyConfig, mailtrapConfig };
