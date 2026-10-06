@@ -11,6 +11,8 @@ docker exec -i mm-neo4j cypher-shell -u neo4j < db/neo4j/schema.cypher
 # start the docker container mm-postgres
 docker run --rm --name mm-postgres -e POSTGRES_USER=mmetwalli -e POSTGRES_PASSWORD=admin1996 -e POSTGRES_DB=postgres -p 5432:5432 -dt --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5 postgres
 
+sleep 5
+
 # seed the database
 docker cp db/postgres mm-postgres:/db && docker exec -it mm-postgres psql -U mmetwalli -d postgres -f db/schema.sql -f db/seed.sql
 
