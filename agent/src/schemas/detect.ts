@@ -8,6 +8,7 @@ const DetectionSchema = z.object({
   partDescription: z.string(),
   qty: z.number(),
   detectionDate: z.string(),
+  incidentId: z.string(),
   lastEventDescription: z.string().nullable().default(null),
   lastEventDate: z.string().nullable().default(null),
 });
