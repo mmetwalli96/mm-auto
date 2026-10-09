@@ -16,9 +16,13 @@ import { z } from "zod";
 import { tools, toolsByName } from "@/graphs/detect/tools";
 import { llm } from "@clients";
 import { AgentState } from "@/graphs/detect/state";
-import { SHORTFALL_STATUS_PROMPT, DETECTION_PROMPT } from "@/graphs/detect/prompts";
+import {
+  SHORTFALL_STATUS_PROMPT,
+  DETECTION_PROMPT,
+} from "@/graphs/detect/prompts";
 import { DetectionSchema } from "@schemas";
 import { checkpointer } from "@/graphs/detect/checkpointer";
+import { saveGraphAsPng } from "@utils";
 
 const llmWithTools = llm.bindTools(tools);
 
@@ -50,8 +54,8 @@ const parseShortfallStatusNode: GraphNode<typeof AgentState> = async (
       shortfallStatus: parsed.shortfallStatus,
     };
   } catch (error) {
-    console.log("Failed to parse shortfall status from LLM response.", error);
-    console.log("Raw LLM response:", lastMessage!.text);
+    console.error("Failed to parse shortfall status from LLM response.", error);
+    console.error("Raw LLM response:", lastMessage!.text);
     return {
       shortfallStatus: null,
       messages: [
@@ -91,8 +95,8 @@ const parseDetectionRecordsNode: GraphNode<typeof AgentState> = async (
       detections: parsed,
     };
   } catch (error) {
-    console.log("Failed to parse detection records from LLM response.", error);
-    console.log("Raw LLM response:", lastMessage!.text);
+    console.error("Failed to parse detection records from LLM response.", error);
+    console.error("Raw LLM response:", lastMessage!.text);
 
     return {
       messages: [
@@ -208,5 +212,7 @@ const detectAgent = new StateGraph(AgentState)
     END,
   ])
   .compile({ checkpointer });
+
+saveGraphAsPng(detectAgent, "../resources/imgs/graphs/detector.png");
 
 export { detectAgent as detector };

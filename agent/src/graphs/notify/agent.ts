@@ -21,7 +21,8 @@ import {
   FIND_PLANT_DIRECTOR_PROMPT,
 } from "@/graphs/notify/prompts";
 import { checkpointer } from "@/graphs/notify/checkpointer";
-import { recipientSchema } from "@schemas";
+import { RecipientSchema } from "@schemas";
+import { saveGraphAsPng } from "@utils";
 
 const llmWithTools = llm.bindTools(tools);
 
@@ -39,7 +40,7 @@ const findPlantDirectorNode: GraphNode<typeof AgentState> = async (state) => {
 };
 
 const parseRecipientNode: GraphNode<typeof AgentState> = async (state) => {
-  const schema = z.array(recipientSchema);
+  const schema = z.array(RecipientSchema);
   const lastMessage = state.messages.at(-1);
 
   try {
@@ -159,5 +160,7 @@ const notifyAgent = new StateGraph(AgentState)
   .addConditionalEdges("notifyNode", shouldNotify, ["notifyToolNode", END])
   .addEdge("notifyToolNode", "notifyNode")
   .compile({ checkpointer });
+
+saveGraphAsPng(notifyAgent, "../resources/imgs/graphs/notifier.png");
 
 export { notifyAgent as notifier };
