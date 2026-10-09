@@ -41,29 +41,22 @@ const parseShortfallStatusNode: GraphNode<typeof AgentState> = async (
   state,
 ) => {
   const schema = z.object({ shortfallStatus: z.boolean() });
-  const systemMessage = new SystemMessage(`
-    Based on the analysis above, return whether a supply shortfall was confirmed.
-    Respond ONLY with JSON: {"shortfallStatus": true} or {"shortfallStatus": false}.
-    Clean and return only the JSON object.
-  `);
+  const lastMessage = state.messages.at(-1);
 
-  const response = await llm.invoke([systemMessage, ...state.messages]);
   try {
-    const raw = response.text.replace(/```json|```/g, "").trim();
+    const raw = lastMessage!.text.replace(/```json|```/g, "").trim();
     const parsed = schema.parse(JSON.parse(raw));
     return {
       shortfallStatus: parsed.shortfallStatus,
-      llmCalls: 1,
     };
   } catch (error) {
     console.log("Failed to parse shortfall status from LLM response.", error);
-    console.log("Raw LLM response:", response.text);
+    console.log("Raw LLM response:", lastMessage!.text);
     return {
       shortfallStatus: null,
-      llmCalls: 1,
       messages: [
         new HumanMessage(
-          `Failed to parse shortfall status ${error}. ${response.text} correct it, here is the schema: ${JSON.stringify(schema.toJSONSchema())}`,
+          `Failed to parse shortfall status ${error}. ${lastMessage!.text} correct it, here is the schema: ${JSON.stringify(schema.toJSONSchema())}. Format of the response was incorrect.`,
         ),
       ],
     };
@@ -89,30 +82,22 @@ const parseDetectionRecordsNode: GraphNode<typeof AgentState> = async (
   state,
 ) => {
   const schema = z.array(DetectionSchema);
-  const systemMessage = new SystemMessage(
-    `From the previous response, extract the detection records in JSON format.
-    ${JSON.stringify(DetectionSchema.toJSONSchema())}
-    Clean and return only the JSON array of detection records.`,
-  );
+  const lastMessage = state.messages.at(-1);
 
-  const response = await llm.invoke([systemMessage, ...state.messages]);
   try {
-    const raw = response.text.replace(/```json|```/g, "").trim();
+    const raw = lastMessage!.text.replace(/```json|```/g, "").trim();
     const parsed = schema.parse(JSON.parse(raw));
     return {
       detections: parsed,
-      messages: [response],
-      llmCalls: 1,
     };
   } catch (error) {
     console.log("Failed to parse detection records from LLM response.", error);
-    console.log("Raw LLM response:", response.text);
+    console.log("Raw LLM response:", lastMessage!.text);
 
     return {
-      llmCalls: 1,
       messages: [
         new HumanMessage(
-          `Failed to parse detection records. ${error}. ${response.text} correct it, here is the schema: ${JSON.stringify(schema.toJSONSchema())}`,
+          `Failed to parse detection records. ${error}. ${lastMessage!.text} correct it, here is the schema: ${JSON.stringify(schema.toJSONSchema())}. The record was found but the format was incorrect.`,
         ),
       ],
     };

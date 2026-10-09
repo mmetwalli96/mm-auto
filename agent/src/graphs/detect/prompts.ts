@@ -121,6 +121,7 @@ Retrieve the data to create the detection record. It should match the following 
   partDescription: string,                          -- description of the part
   qty: integer,                                     -- needed quantity; it can be found from the reason in the incident record
   detectionDate: date,                              -- the date when the detection was made by the agent
+  incidentId: integer,                              -- ID of the incident
   lastEventDescription: string,                     -- description of the last progress event related to the incident
   lastEventDate: date,                              -- date of the last progress event related to the incident
 }]
@@ -148,6 +149,7 @@ OUTPUT:
     "partDescription": "Description of Crankshaft",
     "qty": 50,
     "detectionDate": "2024-06-01 12:00:00",
+    "incidentId": "IN-0105",
     "lastEventDescription": "Notified about supply shortfall to the plant manager",
     "lastEventDate": "2024-05-31 15:30:00"
   }]

@@ -36,14 +36,10 @@ const findSuppliersNode: GraphNode<typeof AgentState> = async (state) => {
 
 const parseSuppliersNode: GraphNode<typeof AgentState> = async (state) => {
   const schema = z.array(SuppliersSchema);
-  const systemMessage = new SystemMessage(`
-        Return a clean response that matches the schema for suppliers from the previous message or messages.
-        Respond only with valid JSON that conforms to the schema. ${JSON.stringify(schema.toJSONSchema())}
-    `);
-  const response = await llm.invoke([systemMessage, ...state.messages]);
+  const lastMessage = state.messages.at(-1);
 
   try {
-    const raw = response.text
+    const raw = lastMessage!.text
       .replace(/^```(?:json)?\s*/i, "")
       .replace(/```\s*$/i, "")
       .trim();
@@ -51,18 +47,15 @@ const parseSuppliersNode: GraphNode<typeof AgentState> = async (state) => {
     const parsed = schema.parse(JSON.parse(raw));
 
     return {
-      messages: [response],
       suppliers: parsed,
-      llmCalls: 1,
     };
   } catch (error) {
     console.error("Failed to parse suppliers JSON:", error);
-    console.error("Raw LLM response:", response.text);
+    console.error("Raw LLM response:", lastMessage!.text);
     return {
-      llmCalls: 1,
       messages: [
         new HumanMessage(
-          `Failed to parse detection records. ${error}. ${response.text} correct it, here is the schema: ${JSON.stringify(schema.toJSONSchema())}`,
+          `Failed to parse detection records. ${error}. ${lastMessage!.text} correct it, here is the schema: ${JSON.stringify(schema.toJSONSchema())}`,
         ),
       ],
     };
