@@ -1,14 +1,14 @@
 import { StateSchema, MessagesValue, ReducedValue } from "@langchain/langgraph";
 import { z } from "zod";
 
-import { recipientSchema } from "@schemas";
+import { RecipientSchema } from "@schemas";
 
 const AgentState = new StateSchema({
   messages: MessagesValue,
   llmCalls: new ReducedValue(z.number().default(0), {
     reducer: (prev, curr) => prev + curr,
   }),
-  recipients: new ReducedValue(z.array(recipientSchema).default([]), {
+  recipients: new ReducedValue(z.array(RecipientSchema).default([]), {
     reducer: (prev, curr) => [...prev, ...curr],
   }),
 });
