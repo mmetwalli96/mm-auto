@@ -48,6 +48,21 @@ const mailtrapConfig = {
     email: process.env.MAILTRAP_SENDER_EMAIL!,
     name: process.env.MAILTRAP_SENDER_NAME!,
   },
+  folder: {
+    id: process.env.MAILTRAP_FOLDER_ID!,
+    name: process.env.MAILTRAP_FOLDER_NAME!,
+  },
+  inbox: {
+    id: process.env.MAILTRAP_INBOX_ID!,
+    name: process.env.MAILTRAP_INBOX_NAME!,
+    address: process.env.MAILTRAP_INBOX_ADDRESS!,
+  },
+  domain: { id: process.env.MAILTRAP_DOMAIN_ID! },
 };
 
-export { llmConfig, dbConfig, tavilyConfig, mailtrapConfig };
+const agendaConfig = {
+  every: process.env.EVERY!,
+  jobName: process.env.JOB_NAME!,
+};
+
+export { llmConfig, dbConfig, tavilyConfig, mailtrapConfig, agendaConfig };
