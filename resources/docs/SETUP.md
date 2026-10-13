@@ -49,11 +49,11 @@ chmod +x db/db.sh
 Run the Docker image 
 
 ```bash
-docker run --name agenda-schedular -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=mmetwalli -e MONGO_INITDB_ROOT_PASSWORD=admin1996 -d mongo:7.0
+docker run --name agenda-schedular -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=mmetwalli -e MONGO_INITDB_ROOT_PASSWORD=x0rxJtPP0UA6jFAS -d mongo:7.0
 ```
 
 Access the data base
 
 ```bash
-docker exec -it agenda-schedular mongosh -u mmetwalli -p admin1996 --authenticationDatabase admin
+docker exec -it agenda-schedular mongosh -u mmetwalli -p x0rxJtPP0UA6jFAS --authenticationDatabase admin
 ```
