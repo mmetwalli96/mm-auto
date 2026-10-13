@@ -15,6 +15,7 @@
     "strictPropertyInitialization": false,
     "allowJs": true,
     "strict": true,
+    "types": ["node", "express"],
     "strictFunctionTypes": false,
     "resolveJsonModule": true,
     "paths": {
@@ -23,7 +24,10 @@
       "@config": ["./src/config"],
       "@utils": ["./src/utils"],
       "@clients": ["./src/clients"],
-      "@schemas": ["./src/schemas"]
+      "@schemas": ["./src/schemas"],
+      "@scheduler": ["./src/scheduler"],
+      "@services": ["./src/services"],
+      "@controllers": ["./src/controllers"],
     }
   },
   "include": ["**/*.ts", "**/*.js"],

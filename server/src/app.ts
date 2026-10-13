@@ -1,63 +1,81 @@
-import { Agenda, Job } from "agenda";
-import { MongoBackend } from "@agendajs/mongo-backend";
-import { HumanMessage } from "@langchain/core/messages";
-import { randomUUID } from "crypto";
+import express from "express";
+import cors from "cors";
+import type { Request, Response, NextFunction } from "express";
 
-import { AutoAgentGraph } from "@graphs";
-import { dbConfig, llmConfig, agendaConfig } from "@config";
-import type { Detection, Supplier } from "@schemas";
+import router from "@/routes";
+import { serverConfig } from "@config";
+import { initializeScheduler, shutdownScheduler } from "@scheduler";
+import { postgresDataSource, neo4jGraph } from "@clients";
+import { enableQuitKey } from "@utils";
 
-type JobData = {
-  question: string;
-  detections?: Detection[];
-  suppliers?: Supplier[];
-  notifierResponse?: string;
-};
-
-const userQuestion =
-  "Detect supply shortfall to create detection record if it exists.";
-const mongodbAddress = `mongodb://${dbConfig.mongo.username}:${dbConfig.mongo.password}@${dbConfig.mongo.host}:${dbConfig.mongo.port}/${dbConfig.mongo.database.scheduler}?authSource=admin`;
-
-const agenda = new Agenda({
-  backend: new MongoBackend({
-    address: mongodbAddress,
+const app = express();
+app.use(
+  cors({
+    allowedHeaders: ["sessionId", "Content-Type", "Authorization"],
+    exposedHeaders: ["sessionId"],
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
   }),
-});
-
-agenda.define(agendaConfig.jobName, async (job: Job<JobData>) => {
-  const { question } = job.attrs.data;
-  const recursionLimit = llmConfig.recursionLimit;
-  const autoThreadId = `auto-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`;
-  const autoConfig = {
-    configurable: { thread_id: autoThreadId },
-    recursionLimit: recursionLimit,
-  };
-
-  const autoAgentResponse = await AutoAgentGraph.invoke(
-    {
-      messages: [new HumanMessage(question)],
-      toResolve: false,
-    },
-    autoConfig,
+);
+app.use(express.json());
+app.use((_: Request, res: Response, next: NextFunction) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE",
   );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type",
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "false");
+  next();
+});
+app.use("/mm-auto", router);
 
-  job.attrs.data.detections = autoAgentResponse.detections;
-  job.attrs.data.suppliers = autoAgentResponse.suppliers;
-  job.attrs.data.notifierResponse = autoAgentResponse.messages.at(-1)?.text;
-  console.log(`Job completed successfully.`);
-  await job.save();
+const port = serverConfig.port;
+const host = serverConfig.host;
+
+await initializeScheduler();
+
+const server = app.listen(port, host, () => {
+  console.log(`Server running at http://${host}:${port}/mm-auto/health/`);
+  console.log("Press 'q' to quit.");
 });
 
-agenda.on(`fail:${agendaConfig.jobName}`, (error, job) => {
-  console.error(`Job ${job.attrs._id} failed:`, error);
-});
+enableQuitKey();
 
-await agenda.start();
+let isShuttingDown = false;
 
-try {
-  await agenda.every(agendaConfig.every, agendaConfig.jobName, {
-    question: userQuestion,
-  });
-} catch (error) {
-  console.error("Failed to schedule job:", error);
+async function shutdown(signal: NodeJS.Signals) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  if (process.stdout.isTTY) process.stdout.write("\r\x1b[2K");
+  console.log(`${signal} received, shutting down...`);
+
+  const forceExit = setTimeout(() => {
+    console.error("Shutdown timed out, forcing exit");
+    process.exit(1);
+  }, 10_000);
+  forceExit.unref();
+
+  try {
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+    await shutdownScheduler();
+    await Promise.allSettled([
+      postgresDataSource.isInitialized
+        ? postgresDataSource.destroy()
+        : Promise.resolve(),
+      neo4jGraph.close(),
+    ]);
+    console.log("Shutdown complete");
+    process.exit(0);
+  } catch (error) {
+    console.error("Error during shutdown:", error);
+    process.exit(1);
+  }
 }
+
+process.on("SIGINT", () => void shutdown("SIGINT"));
+process.on("SIGTERM", () => void shutdown("SIGTERM"));

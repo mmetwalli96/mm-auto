@@ -10,6 +10,11 @@ const llmConfig = {
   recursionLimit: parseInt(process.env.RECURSION_LIMIT!),
 };
 
+const serverConfig = {
+  host: process.env.SERVER_HOST!,
+  port: parseInt(process.env.SERVER_PORT!),
+}
+
 const tavilyConfig = {
   apiKey: process.env.TAVILY_API_KEY!,
   maxResults: parseInt(process.env.MAX_RESULTS!),
@@ -31,6 +36,7 @@ const dbConfig = {
     database: process.env.NEO4J_DB!,
   },
   mongo: {
+    protocol: process.env.MONGODB_PROTOCOL!,
     host: process.env.MONGODB_HOST!,
     port: parseInt(process.env.MONGODB_PORT!),
     username: process.env.MONGODB_USERNAME!,
@@ -65,4 +71,4 @@ const agendaConfig = {
   jobName: process.env.JOB_NAME!,
 };
 
-export { llmConfig, dbConfig, tavilyConfig, mailtrapConfig, agendaConfig };
+export { llmConfig, dbConfig, tavilyConfig, mailtrapConfig, agendaConfig, serverConfig };
