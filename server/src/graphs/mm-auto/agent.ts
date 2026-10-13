@@ -13,7 +13,6 @@ import { checkpointer } from "@/graphs/mm-auto/checkpointer";
 import { detector } from "@/graphs/detect/agent";
 import { searcher } from "@/graphs/search/agent";
 import { notifier } from "@/graphs/notify/agent";
-import { saveGraphAsPng } from "@utils";
 import { llmConfig } from "@config";
 
 const recursionLimit = llmConfig.recursionLimit;
@@ -48,7 +47,13 @@ const searchNode: GraphNode<typeof AgentState> = async (state) => {
     recursionLimit: recursionLimit,
   };
   const response = await searcher.invoke(
-    { messages: [new HumanMessage(`Here are the detection records: ${JSON.stringify(state.detections)}`)] },
+    {
+      messages: [
+        new HumanMessage(
+          `Here are the detection records: ${JSON.stringify(state.detections)}`,
+        ),
+      ],
+    },
     searchConfig,
   );
 
@@ -65,7 +70,13 @@ const notifyNode: GraphNode<typeof AgentState> = async (state) => {
     recursionLimit: recursionLimit,
   };
   const response = await notifier.invoke(
-    { messages: [new HumanMessage(`Here are the list of alternative suppliers per part: ${JSON.stringify(state.suppliers)} and the detection records: ${JSON.stringify(state.detections)} notify the appropriate plant directors`)] },
+    {
+      messages: [
+        new HumanMessage(
+          `Here are the list of alternative suppliers per part: ${JSON.stringify(state.suppliers)} and the detection records: ${JSON.stringify(state.detections)} notify the appropriate plant directors`,
+        ),
+      ],
+    },
     notifyConfig,
   );
 
@@ -75,14 +86,18 @@ const notifyNode: GraphNode<typeof AgentState> = async (state) => {
   };
 };
 
-const detectOrRespond: ConditionalEdgeRouter<typeof AgentState> = async (state) => {
+const detectOrRespond: ConditionalEdgeRouter<typeof AgentState> = async (
+  state,
+) => {
   if (state.toResolve) {
     return "respondNode";
   }
   return "detectNode";
 };
 
-const shouldSearch: ConditionalEdgeRouter<typeof AgentState> = async (state) => {
+const shouldSearch: ConditionalEdgeRouter<typeof AgentState> = async (
+  state,
+) => {
   if (state.shortfallStatus) {
     return "searchNode";
   }
@@ -100,7 +115,5 @@ const AutoAgentGraph = new StateGraph(AgentState)
   .addEdge("searchNode", "notifyNode")
   .addEdge("notifyNode", END)
   .compile({ checkpointer });
-
-saveGraphAsPng(AutoAgentGraph, "../resources/imgs/graphs/auto_agent.png");
 
 export { AutoAgentGraph };

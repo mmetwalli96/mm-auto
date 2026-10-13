@@ -19,8 +19,6 @@ import { AgentState } from "@/graphs/search/state";
 import { checkpointer } from "@/graphs/search/checkpointer";
 import { SEARCH_PROMPT } from "@/graphs/search/prompts";
 import { SuppliersSchema } from "@schemas";
-import { saveGraphAsPng } from "@utils";
-
 
 const llmWithTools = llm.bindTools(tools);
 
@@ -120,9 +118,10 @@ const searchAgent = new StateGraph(AgentState)
     "parseSuppliersNode",
   ])
   .addEdge("findSuppliersToolNode", "findSuppliersNode")
-  .addConditionalEdges("parseSuppliersNode", shouldFinish, ["findSuppliersNode", END])
+  .addConditionalEdges("parseSuppliersNode", shouldFinish, [
+    "findSuppliersNode",
+    END,
+  ])
   .compile({ checkpointer });
-
-saveGraphAsPng(searchAgent, "../resources/imgs/graphs/searcher.png");
 
 export { searchAgent as searcher };

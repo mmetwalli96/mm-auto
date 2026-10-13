@@ -22,7 +22,6 @@ import {
 } from "@/graphs/detect/prompts";
 import { DetectionSchema } from "@schemas";
 import { checkpointer } from "@/graphs/detect/checkpointer";
-import { saveGraphAsPng } from "@utils";
 
 const llmWithTools = llm.bindTools(tools);
 
@@ -95,7 +94,10 @@ const parseDetectionRecordsNode: GraphNode<typeof AgentState> = async (
       detections: parsed,
     };
   } catch (error) {
-    console.error("Failed to parse detection records from LLM response.", error);
+    console.error(
+      "Failed to parse detection records from LLM response.",
+      error,
+    );
     console.error("Raw LLM response:", lastMessage!.text);
 
     return {
@@ -212,7 +214,5 @@ const detectAgent = new StateGraph(AgentState)
     END,
   ])
   .compile({ checkpointer });
-
-saveGraphAsPng(detectAgent, "../resources/imgs/graphs/detector.png");
 
 export { detectAgent as detector };

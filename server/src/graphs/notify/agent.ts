@@ -22,7 +22,6 @@ import {
 } from "@/graphs/notify/prompts";
 import { checkpointer } from "@/graphs/notify/checkpointer";
 import { RecipientSchema } from "@schemas";
-import { saveGraphAsPng } from "@utils";
 
 const llmWithTools = llm.bindTools(tools);
 
@@ -160,7 +159,5 @@ const notifyAgent = new StateGraph(AgentState)
   .addConditionalEdges("notifyNode", shouldNotify, ["notifyToolNode", END])
   .addEdge("notifyToolNode", "notifyNode")
   .compile({ checkpointer });
-
-saveGraphAsPng(notifyAgent, "../resources/imgs/graphs/notifier.png");
 
 export { notifyAgent as notifier };
