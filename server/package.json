@@ -11,10 +11,10 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "npm run clean && tsc --noEmit && esbuild src/app.ts --bundle --platform=node --format=esm --target=node22 --packages=external --sourcemap --outfile=dist/app.js",
+    "start": "node --enable-source-maps dist/app.js",
     "clean": "rm -rf dist",
     "dev": "node --watch --import tsx src/app.ts",
-    "start": "tsx src/app.ts",
     "lint": "eslint src"
   },
   "dependencies": {
