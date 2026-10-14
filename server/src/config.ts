@@ -27,18 +27,16 @@ const dbConfig = {
     username: process.env.POSTGRES_USERNAME!,
     password: process.env.POSTGRES_PASSWORD!,
     database: process.env.POSTGRES_DB!,
+    ssl: process.env.POSTGRES_SSL === "true" ? true : false,
   },
   neo4j: {
-    host: process.env.NEO4J_HOST!,
-    port: parseInt(process.env.NEO4J_PORT!),
+    uri: process.env.NEO4J_URI!,
     username: process.env.NEO4J_USERNAME!,
     password: process.env.NEO4J_PASSWORD!,
-    database: process.env.NEO4J_DB!,
   },
   mongo: {
     protocol: process.env.MONGODB_PROTOCOL!,
     host: process.env.MONGODB_HOST!,
-    port: parseInt(process.env.MONGODB_PORT!),
     username: process.env.MONGODB_USERNAME!,
     password: process.env.MONGODB_PASSWORD!,
     database: {

@@ -10,6 +10,7 @@ const postgresDataSource = new DataSource({
     username: dbConfig.postgres.username,
     password: dbConfig.postgres.password,
     database: dbConfig.postgres.database,
+    ssl:  dbConfig.postgres.ssl ? { rejectUnauthorized: false } : false,
 });
 
 const sqlDatabase = await SqlDatabase.fromDataSourceParams({

@@ -3,7 +3,7 @@ import { MongoDBSaver } from "@langchain/langgraph-checkpoint-mongodb";
 
 import { dbConfig } from "@config";
 
-const mongoAddress = `mongodb://${dbConfig.mongo.username}:${dbConfig.mongo.password}@${dbConfig.mongo.host}:${dbConfig.mongo.port}/${dbConfig.mongo.database.agent}?authSource=admin`;
+const mongoAddress = `${dbConfig.mongo.protocol}://${dbConfig.mongo.username}:${dbConfig.mongo.password}@${dbConfig.mongo.host}/?appName=${dbConfig.mongo.database.agent}`;
 const checkpointCollectionName = "search_checkpoints";
 const collectionWritesCollectionName = "search_checkpoint_writes";
 
