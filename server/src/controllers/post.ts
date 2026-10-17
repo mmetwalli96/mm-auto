@@ -78,6 +78,6 @@ export const updateRepository = asyncHandler(
       console.error('git pull error:', error);
     }
 
-    return res.status(200).json({ status: "repository updated" });
+    return null;
   },
 );
