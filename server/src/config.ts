@@ -70,4 +70,10 @@ const agendaConfig = {
   jobName: process.env.JOB_NAME!,
 };
 
-export { llmConfig, dbConfig, tavilyConfig, mailtrapConfig, agendaConfig, serverConfig };
+const githubConfig = {
+  secret: process.env.GITHUB_WEBHOOK_SECRET!,
+  repositoryPath: process.env.REPOSITORY_PATH!,
+  timeout: parseInt(process.env.TIMEOUT!),
+};
+
+export { llmConfig, dbConfig, tavilyConfig, mailtrapConfig, agendaConfig, serverConfig, githubConfig };
