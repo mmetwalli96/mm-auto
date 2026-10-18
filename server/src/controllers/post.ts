@@ -74,10 +74,23 @@ export const updateRepository = asyncHandler(
         timeout: githubConfig.timeout,
       });
       console.log('git pull:', stdout);
+      await execFileAsync('npm', ['ci'], { cwd: githubConfig.repositoryPath });
+      await execFileAsync('npm', ['run', 'build'], { cwd: githubConfig.repositoryPath });
+      await execFileAsync('pm2', ['reload', 'app']);
     } catch (error) {
-      console.error('git pull error:', error);
+      console.error('Error during repository update:', error);
     }
 
     return null;
+  },
+);
+
+export const followUp = asyncHandler(
+  async (req: Request, res: Response) => {
+    
+    const body = req.body!
+    console.log(body);
+
+    return res.status(200).json({ status: "follow-up received" });
   },
 );

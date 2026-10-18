@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { startDetectionJob, stopDetectionJob, health, updateRepository } from "@controllers";
+import { startDetectionJob, stopDetectionJob, health, updateRepository, followUp } from "@controllers";
 
 
 
@@ -13,5 +13,6 @@ router.get("/health", health);
 router.post("/start", startDetectionJob);
 router.post("/stop", stopDetectionJob);
 router.post("/update", updateRepository);
+router.post("/follow", followUp);
 
 export default router;
