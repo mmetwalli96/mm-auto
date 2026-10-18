@@ -74,8 +74,8 @@ export const updateRepository = asyncHandler(
         timeout: githubConfig.timeout,
       });
       console.log('git pull:', stdout);
-      await execFileAsync('npm', ['ci'], { cwd: githubConfig.repositoryPath });
-      await execFileAsync('npm', ['run', 'build'], { cwd: githubConfig.repositoryPath });
+      await execFileAsync('npm', ['ci'], { cwd: `${githubConfig.repositoryPath}/server` });
+      await execFileAsync('npm', ['run', 'build'], { cwd: `${githubConfig.repositoryPath}/server` });
       await execFileAsync('pm2', ['reload', 'app']);
     } catch (error) {
       console.error('Error during repository update:', error);
