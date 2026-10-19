@@ -1,11 +1,14 @@
 import crypto from "crypto";
-import { githubConfig } from "@config";
+import { githubConfig, llmConfig, mailtrapConfig } from "@config";
 import type { Request, Response } from "express";
 import { asyncHandler } from "@utils";
 import { startScheduler, stopScheduler } from "@services";
+import { randomUUID } from "crypto";
 
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import { HumanMessage } from "@langchain/core/messages";
+import { autoAgentGraph } from "@graphs";
 
 const execFileAsync = promisify(execFile);
 
@@ -44,10 +47,10 @@ export const updateRepository = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.rawBody) return res.status(400).send('Missing raw body');
 
-    const sig = req.get('X-Hub-Signature-256')!;
-    const serverSignature = 'sha256=' + crypto.createHmac('sha256', githubConfig.secret).update(req.rawBody!).digest('hex');
-    const a = Buffer.from(sig)
-    const b = Buffer.from(serverSignature);
+    const signature = req.get('X-Hub-Signature-256')!;
+    const computedSignature = 'sha256=' + crypto.createHmac('sha256', githubConfig.secret).update(req.rawBody!).digest('hex');
+    const a = Buffer.from(signature);
+    const b = Buffer.from(computedSignature);
 
     if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
       return res.sendStatus(401).json({ error: "Unauthorized Access" });
@@ -87,10 +90,56 @@ export const updateRepository = asyncHandler(
 
 export const followUp = asyncHandler(
   async (req: Request, res: Response) => {
-    
-    const body = req.body!
-    console.log(body);
+    try {
+      const signature = req.headers['mailtrap-signature'];
+      const rawBody = req.rawBody!;
+      const computedSignature = crypto.createHmac('sha256', mailtrapConfig.webhookSecret).update(rawBody).digest('hex');
 
-    return res.status(200).json({ status: "follow-up received" });
+      const a = Buffer.from(signature);
+      const b = Buffer.from(computedSignature);
+      if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+        return res.sendStatus(401).json({ error: "Unauthorized Access" });
+      }
+
+      const body = req.body!
+      const messageId = body.events?.at(0).message_id;
+      const from = body.events?.at(0).from;
+      const timestamp = body.events?.at(0).timestamp;
+      const textBody = body.events?.at(0).text_body;
+      const responseMetadata = {
+        message_id: messageId,
+        sender: from,
+        received_at: new Date(timestamp).toISOString(),
+        text_body: textBody,
+      }
+
+      const recursionLimit = llmConfig.recursionLimit;
+      const autoThreadId = `auto-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`;
+      const autoConfig = {
+        configurable: { thread_id: autoThreadId },
+        recursionLimit: recursionLimit,
+      };
+
+      const humanMessage = new HumanMessage(`
+      Follow-up received with the following metadata of the director response:
+      ${JSON.stringify(responseMetadata, null, 2)}
+    `);
+      const response = await autoAgentGraph.invoke(
+        {
+          messages: [humanMessage],
+          toResolve: true
+        },
+        autoConfig
+      );
+
+
+      return res.status(200).json({ status: "follow-up received", messages: response.messages });
+
+    } catch (error) {
+      console.error('Error handling follow-up:', error);
+      return res.status(500).json({ error: 'Internal Server Error', message: (error as Error).message });
+    }
+
+
   },
 );

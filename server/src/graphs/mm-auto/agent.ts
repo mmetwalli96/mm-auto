@@ -13,12 +13,27 @@ import { checkpointer } from "@/graphs/mm-auto/checkpointer";
 import { detector } from "@/graphs/detect/agent";
 import { searcher } from "@/graphs/search/agent";
 import { notifier } from "@/graphs/notify/agent";
+import { followUpAgent } from "@/graphs/follow/agent";
 import { llmConfig } from "@config";
 
 const recursionLimit = llmConfig.recursionLimit;
 
 const respondNode: GraphNode<typeof AgentState> = async (state) => {
-  return state;
+  const followUpThreadId = `follow-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`;
+  const followUpConfig = {
+    configurable: { thread_id: followUpThreadId },
+    recursionLimit: recursionLimit,
+  };
+
+  const lastMessage = state.messages.at(-1)!;
+
+  const followUpResponse = await followUpAgent.invoke(
+    { messages: [lastMessage] },
+    followUpConfig,
+  );
+  return {
+    messages: followUpResponse.messages,
+  };
 };
 
 const detectNode: GraphNode<typeof AgentState> = async (state) => {
@@ -104,7 +119,7 @@ const shouldSearch: ConditionalEdgeRouter<typeof AgentState> = async (
   return END;
 };
 
-const AutoAgentGraph = new StateGraph(AgentState)
+const autoAgentGraph = new StateGraph(AgentState)
   .addNode("respondNode", respondNode)
   .addNode("detectNode", detectNode)
   .addNode("searchNode", searchNode)
@@ -116,4 +131,4 @@ const AutoAgentGraph = new StateGraph(AgentState)
   .addEdge("notifyNode", END)
   .compile({ checkpointer });
 
-export { AutoAgentGraph };
+export { autoAgentGraph };

@@ -3,7 +3,7 @@ import { HumanMessage } from "@langchain/core/messages";
 import { randomUUID } from "crypto";
 
 import type { Detection, Supplier } from "@schemas";
-import { AutoAgentGraph } from "@graphs";
+import { autoAgentGraph } from "@graphs";
 import { llmConfig, agendaConfig } from "@config";
 
 type JobData = {
@@ -26,7 +26,7 @@ function createSupplyShortfallDetectionJob(agenda: Agenda) {
       recursionLimit: recursionLimit,
     };
 
-    const autoAgentResponse = await AutoAgentGraph.invoke(
+    const autoAgentResponse = await autoAgentGraph.invoke(
       {
         messages: [new HumanMessage(question)],
         toResolve: false,

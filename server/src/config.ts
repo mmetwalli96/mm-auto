@@ -54,15 +54,16 @@ const mailtrapConfig = {
     name: process.env.MAILTRAP_SENDER_NAME!,
   },
   folder: {
-    id: process.env.MAILTRAP_FOLDER_ID!,
+    id: parseInt(process.env.MAILTRAP_FOLDER_ID!),
     name: process.env.MAILTRAP_FOLDER_NAME!,
   },
   inbox: {
-    id: process.env.MAILTRAP_INBOX_ID!,
+    id: parseInt(process.env.MAILTRAP_INBOX_ID!),
     name: process.env.MAILTRAP_INBOX_NAME!,
     address: process.env.MAILTRAP_INBOX_ADDRESS!,
   },
-  domain: { id: process.env.MAILTRAP_DOMAIN_ID! },
+  domain: { id: parseInt(process.env.MAILTRAP_DOMAIN_ID!) },
+  webhookSecret: process.env.MAILTRAP_WEBHOOK_SECRET!,
 };
 
 const agendaConfig = {

@@ -1,1 +1,1 @@
-export { AutoAgentGraph } from "@/graphs/mm-auto/agent";
+export { autoAgentGraph } from "@/graphs/mm-auto/agent";
