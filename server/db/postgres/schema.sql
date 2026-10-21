@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS interruption_codes (
-    id SERIAL PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     code VARCHAR(50) UNIQUE NOT NULL,
     reason TEXT NOT NULL,
     category VARCHAR(50) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS interruption_codes (
 );
 
 CREATE TABLE IF NOT EXISTS incident_history (
-    id SERIAL PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     incident VARCHAR(50) UNIQUE NOT NULL,
     interruption VARCHAR(50) NOT NULL,
     occurrence_time TIMESTAMP NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS incident_history (
 );
 
 CREATE TABLE IF NOT EXISTS progress_tracker (
-    id SERIAL PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     incident VARCHAR(50) NOT NULL,
     event_time TIMESTAMP NOT NULL,
     event_description TEXT NOT NULL,
