@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@agendajs/mongo-backend": "^4.0.3",
+    "@google-cloud/storage": "^8.4.0",
     "@langchain/anthropic": "^1.5.10",
     "@langchain/classic": "^1.0.48",
     "@langchain/core": "^1.2.12",
