@@ -4,13 +4,19 @@ import { promisify } from "util";
 import path from "path";
 import { dbConfig } from "@/config";
 import type { GetFilesResponse } from "@google-cloud/storage";
+import fs from "fs/promises";
 
 const execFileAsync = promisify(execFile);
-const DB_DIR = path.join(import.meta.dirname, "..", "..", "db", "postgres");
+const DB_DIR = path.join(import.meta.dirname, "..", "..", "db");
 
 interface ResetState {
     success: boolean;
     error?: string;
+}
+
+interface SignedFile {
+    name: string;
+    url: string;
 }
 
 export const resetPg = async (): Promise<ResetState> => {
@@ -28,8 +34,8 @@ export const resetPg = async (): Promise<ResetState> => {
             [
                 "-v", "ON_ERROR_STOP=1",
                 "--single-transaction",
-                "-f", path.join(DB_DIR, "schema.sql"),
-                "-f", path.join(DB_DIR, "seed.sql"),
+                "-f", path.join(DB_DIR, "postgres", "schema.sql"),
+                "-f", path.join(DB_DIR, "postgres", "seed.sql"),
             ],
             {
                 env: {
@@ -44,7 +50,7 @@ export const resetPg = async (): Promise<ResetState> => {
                 maxBuffer: 10 * 1024 * 1024,
             }
         );
-        if (stderr) console.warn(stderr);
+        if (stderr) { console.error(stderr); return { success: false, error: stderr }; }
         console.log(stdout);
         return { success: true };
 
@@ -57,24 +63,50 @@ export const resetPg = async (): Promise<ResetState> => {
 };
 
 export const resetNeo4j = async (): Promise<ResetState> => {
-    var urls: string[] = [];
     try {
         await neo4jGraph.query(`
-            MATCH (n)
-            CALL (n) { DETACH DELETE n } IN TRANSACTIONS OF 10000 ROWS;
+            MATCH (n) DETACH DELETE n;
         `);
-        const files: GetFilesResponse = await bucket.getFiles();
-        const fileNames = files[0].map(file => !["interruption_codes.csv", "progress_tracker.csv", "incident_history.csv"].includes(file.name) ? file.name : null!).filter(Boolean);
-        for (const fileName of fileNames) {
-            const file = bucket.file(fileName);
-            const url = await file.getSignedUrl({
-                version: 'v4',
-                action: 'read',
-                expires: Date.now() + 5 * 60 * 1000
+        const [files]: GetFilesResponse = await bucket.getFiles();
+        const signedFiles = (await Promise.all(files.map(async file => {
+            if (["interruption_codes.csv", "progress_tracker.csv", "incident_history.csv"].includes(file.name)) return null;
+            const [url] = await file.getSignedUrl({
+                version: "v4",
+                action: "read",
+                expires: Date.now() + 3 * 60 * 1000,
             });
-            console.log(`Generated signed URL for file: ${fileName}, URL: ${url}`);
-            urls.push(url[0]);
+            return { name: file.name, url };
+        }))).filter((file): file is SignedFile => file !== null);
+
+        const originalCypher = await fs.readFile(path.join(DB_DIR, "neo4j", "schema.cypher"), "utf-8");
+        let updatedCypher = originalCypher;
+        for (const signedFile of signedFiles) {
+            const textToReplace = `file:///${signedFile.name}`;
+            updatedCypher = updatedCypher.replaceAll(textToReplace, signedFile.url);
         }
+
+        const schemaFilePath = path.join(DB_DIR, "..", "tmp", "schema.cypher");
+        await fs.writeFile(schemaFilePath, updatedCypher, "utf-8");
+
+        const { stdout, stderr } = await execFileAsync(
+            "cypher-shell",
+            [
+                "-a", dbConfig.neo4j.uri,
+                "-d", dbConfig.neo4j.database,
+                "-f", schemaFilePath,
+            ],
+            {
+                env: {
+                    ...process.env,
+                    NEO4J_USERNAME: dbConfig.neo4j.userName,
+                    NEO4J_PASSWORD: dbConfig.neo4j.password,
+                }
+            }
+        );
+
+        if (stderr) { console.error(stderr); return { success: false, error: stderr }; }
+        console.log(stdout);
+
         return { success: true };
     } catch (error) {
         console.error('Error resetting Neo4j:', error);
