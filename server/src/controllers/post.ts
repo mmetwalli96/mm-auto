@@ -10,8 +10,10 @@ import { promisify } from 'util';
 import { HumanMessage } from "@langchain/core/messages";
 import { autoAgentGraph } from "@graphs";
 import { resetPg, resetNeo4j } from "@/models/post";
+import path from "path";
 
 const execFileAsync = promisify(execFile);
+const SERVER_DIR = path.join(githubConfig.repositoryPath, "server");
 
 
 export const startDetectionJob = asyncHandler(
@@ -78,8 +80,9 @@ export const updateRepository = asyncHandler(
         timeout: githubConfig.timeout,
       });
       console.log('git pull:', stdout);
-      await execFileAsync('npm', ['ci'], { cwd: `${githubConfig.repositoryPath}/server` });
-      await execFileAsync('npm', ['run', 'build'], { cwd: `${githubConfig.repositoryPath}/server` });
+      
+      await execFileAsync('npm', ['ci', '--include=dev'], { cwd: SERVER_DIR });
+      await execFileAsync('npm', ['run', 'build'], { cwd: SERVER_DIR });
       await execFileAsync('pm2', ['reload', 'app']);
     } catch (error) {
       console.error('Error during repository update:', error);
