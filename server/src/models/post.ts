@@ -7,7 +7,7 @@ import type { GetFilesResponse } from "@google-cloud/storage";
 import fs from "fs/promises";
 
 const execFileAsync = promisify(execFile);
-const DB_DIR = path.join(import.meta.dirname, "..", "..", "db");
+const DB_DIR = path.join(process.cwd(), "db");
 
 interface ResetState {
     success: boolean;
