@@ -15,6 +15,10 @@ const serverConfig = {
   port: parseInt(process.env.SERVER_PORT!),
 }
 
+const googleConfig = {
+  bucket: process.env.GOOGLE_BUCKET_NAME!,
+}
+
 const tavilyConfig = {
   apiKey: process.env.TAVILY_API_KEY!,
   maxResults: parseInt(process.env.MAX_RESULTS!),
@@ -24,21 +28,21 @@ const dbConfig = {
   postgres: {
     host: process.env.POSTGRES_HOST!,
     port: parseInt(process.env.POSTGRES_PORT!),
-    username: process.env.POSTGRES_USERNAME!,
+    userName: process.env.POSTGRES_USERNAME!,
     password: process.env.POSTGRES_PASSWORD!,
     database: process.env.POSTGRES_DB!,
     ssl: process.env.POSTGRES_SSL === "true" ? true : false,
   },
   neo4j: {
     uri: process.env.NEO4J_URI!,
-    username: process.env.NEO4J_USERNAME!,
+    userName: process.env.NEO4J_USERNAME!,
     password: process.env.NEO4J_PASSWORD!,
     database: process.env.NEO4J_DATABASE!,
   },
   mongo: {
     protocol: process.env.MONGODB_PROTOCOL!,
     host: process.env.MONGODB_HOST!,
-    username: process.env.MONGODB_USERNAME!,
+    userName: process.env.MONGODB_USERNAME!,
     password: process.env.MONGODB_PASSWORD!,
     database: {
       scheduler: process.env.MONGODB_SCHEDULER_NAME!,
@@ -77,4 +81,4 @@ const githubConfig = {
   timeout: parseInt(process.env.TIMEOUT!),
 };
 
-export { llmConfig, dbConfig, tavilyConfig, mailtrapConfig, agendaConfig, serverConfig, githubConfig };
+export { llmConfig, dbConfig, tavilyConfig, mailtrapConfig, agendaConfig, serverConfig, githubConfig, googleConfig };

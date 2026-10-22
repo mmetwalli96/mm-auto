@@ -20,7 +20,7 @@ async function startScheduler(
   } catch (error) {
     console.error("Failed to schedule job:", error);
     return {
-        statusMessage: `Failed to schedule ${agendaConfig.jobName}`,
+        status: `Failed to schedule ${agendaConfig.jobName}`,
         error: error,
     };
   }
@@ -32,7 +32,7 @@ async function stopScheduler(mode: StopMode = "disable") {
   } catch (error) {
     console.error("Failed to stop job:", error);
     return {
-        statusMessage: `Failed to stop ${agendaConfig.jobName}`,
+        status: `Failed to stop ${agendaConfig.jobName}`,
         error: error,
     };
   }

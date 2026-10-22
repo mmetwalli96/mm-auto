@@ -9,6 +9,7 @@ import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { HumanMessage } from "@langchain/core/messages";
 import { autoAgentGraph } from "@graphs";
+import { resetPg, resetNeo4j } from "@/models/post";
 
 const execFileAsync = promisify(execFile);
 
@@ -139,6 +140,25 @@ export const followUp = asyncHandler(
       console.error('Error handling follow-up:', error);
       return res.status(500).json({ error: 'Internal Server Error', message: (error as Error).message });
     }
+
+
+  },
+);
+
+export const reset = asyncHandler(
+  async (_: Request, res: Response) => {
+
+    const pgState = await resetPg();
+    if (!pgState.success) {
+      return res.status(500).json({ status: "Failed to reset PostgreSQL", error: pgState.error! });
+    }
+
+    const neo4jState = await resetNeo4j();
+    if (!neo4jState.success) {
+      return res.status(500).json({ status: "Failed to reset Neo4j", error: neo4jState.error! });
+    }
+
+    return res.status(200).json({ status: "PostgreSQL and Neo4j reset successfully" });
 
 
   },
