@@ -10,10 +10,9 @@ import { promisify } from 'util';
 import { HumanMessage } from "@langchain/core/messages";
 import { autoAgentGraph } from "@graphs";
 import { resetPg, resetNeo4j } from "@/models/post";
-import path from "path";
 
 const execFileAsync = promisify(execFile);
-const SERVER_DIR = path.join(githubConfig.repositoryPath, "server");
+const SERVER_DIR = process.cwd();
 
 
 export const startDetectionJob = asyncHandler(
