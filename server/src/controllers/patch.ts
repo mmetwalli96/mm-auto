@@ -1,10 +1,24 @@
 import { updateEmployeeRecord } from "@/models/patch";
 import { Request, Response } from "express";
 import { asyncHandler } from "@utils";
+import { serverConfig } from "@config";
+import crypto from "crypto";
 
 
 export const updateEmployeeData = asyncHandler(async (req: Request, res: Response) => {
     try {
+        const token = req.headers.authorization?.split(" ")?.[1] ?? "";
+        const serverSecret = serverConfig.secret;
+
+        const tokenBuffer = Buffer.from(token);
+        const secretBuffer = Buffer.from(String(serverSecret));
+        if (
+            tokenBuffer.length !== secretBuffer.length ||
+            !crypto.timingSafeEqual(tokenBuffer, secretBuffer)
+        ) {
+            return res.status(401).json({ error: "Unauthorized Access Detected" });
+        }
+
         const { name, email } = req.body;
         const employee = {
             id: process.env.EMPLOYEE_ID!,

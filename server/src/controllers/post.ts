@@ -10,6 +10,7 @@ import { promisify } from 'util';
 import { HumanMessage } from "@langchain/core/messages";
 import { autoAgentGraph } from "@graphs";
 import { resetPg, resetNeo4j } from "@/models/post";
+import { serverConfig } from "@config";
 
 const execFileAsync = promisify(execFile);
 const SERVER_DIR = process.cwd();
@@ -17,6 +18,17 @@ const SERVER_DIR = process.cwd();
 
 export const startDetectionJob = asyncHandler(
   async (req: Request, res: Response) => {
+    const token = req.headers.authorization?.split(" ")?.[1] ?? "";
+    const serverSecret = serverConfig.secret;
+
+    const tokenBuffer = Buffer.from(token);
+    const secretBuffer = Buffer.from(String(serverSecret));
+    if (
+      tokenBuffer.length !== secretBuffer.length ||
+      !crypto.timingSafeEqual(tokenBuffer, secretBuffer)
+    ) {
+      return res.status(401).json({ error: "Unauthorized Access Detected" });
+    }
     const { interval, question } = req.body ?? {};
     if (interval !== undefined && typeof interval !== "string") {
       return res.status(400).json({
@@ -31,6 +43,17 @@ export const startDetectionJob = asyncHandler(
 
 export const stopDetectionJob = asyncHandler(
   async (req: Request, res: Response) => {
+    const token = req.headers.authorization?.split(" ")?.[1] ?? "";
+    const serverSecret = serverConfig.secret;
+
+    const tokenBuffer = Buffer.from(token);
+    const secretBuffer = Buffer.from(String(serverSecret));
+    if (
+      tokenBuffer.length !== secretBuffer.length ||
+      !crypto.timingSafeEqual(tokenBuffer, secretBuffer)
+    ) {
+      return res.status(401).json({ error: "Unauthorized Access Detected" });
+    }
     const { mode } = req.body ?? {};
     if (mode !== undefined && (mode !== "disable" && mode !== "cancel")) {
       return res.status(400).json({
@@ -79,7 +102,7 @@ export const updateRepository = asyncHandler(
         timeout: githubConfig.timeout,
       });
       console.log('git pull:', stdout);
-      
+
       await execFileAsync('npm', ['ci', '--include=dev'], { cwd: SERVER_DIR });
       await execFileAsync('npm', ['run', 'build'], { cwd: SERVER_DIR });
       await execFileAsync('pm2', ['reload', 'app']);
@@ -117,7 +140,7 @@ export const followUp = asyncHandler(
       }
 
       const recursionLimit = llmConfig.recursionLimit;
-      const autoThreadId = `auto-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`;
+      const autoThreadId = `mmauto-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`;
       const autoConfig = {
         configurable: { thread_id: autoThreadId },
         recursionLimit: recursionLimit,
@@ -126,7 +149,7 @@ export const followUp = asyncHandler(
       const humanMessage = new HumanMessage(`
       Follow-up received with the following metadata of the director response:
       ${JSON.stringify(responseMetadata, null, 2)}
-    `);
+      `);
       const response = await autoAgentGraph.invoke(
         {
           messages: [humanMessage],
@@ -148,7 +171,18 @@ export const followUp = asyncHandler(
 );
 
 export const reset = asyncHandler(
-  async (_: Request, res: Response) => {
+  async (req: Request, res: Response) => {
+    const token = req.headers.authorization?.split(" ")?.[1] ?? "";
+    const serverSecret = serverConfig.secret;
+
+    const tokenBuffer = Buffer.from(token);
+    const secretBuffer = Buffer.from(String(serverSecret));
+    if (
+      tokenBuffer.length !== secretBuffer.length ||
+      !crypto.timingSafeEqual(tokenBuffer, secretBuffer)
+    ) {
+      return res.status(401).json({ error: "Unauthorized Access Detected" });
+    }
 
     const pgState = await resetPg();
     if (!pgState.success) {

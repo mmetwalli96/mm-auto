@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const llmConfig = {
+export const llmConfig = {
   model: process.env.MODEL!,
   apiKey: process.env.DEEPSEEK_API_KEY!,
   anthropicApiUrl: process.env.BASE_URL!,
@@ -10,21 +10,22 @@ const llmConfig = {
   recursionLimit: parseInt(process.env.RECURSION_LIMIT!),
 };
 
-const serverConfig = {
+export const serverConfig = {
   host: process.env.SERVER_HOST!,
   port: parseInt(process.env.SERVER_PORT!),
+  secret: process.env.SERVER_SECRET!,
 }
 
-const googleConfig = {
+export const googleConfig = {
   bucket: process.env.GOOGLE_BUCKET_NAME!,
 }
 
-const tavilyConfig = {
+export const tavilyConfig = {
   apiKey: process.env.TAVILY_API_KEY!,
   maxResults: parseInt(process.env.MAX_RESULTS!),
 };
 
-const dbConfig = {
+export const dbConfig = {
   postgres: {
     host: process.env.POSTGRES_HOST!,
     port: parseInt(process.env.POSTGRES_PORT!),
@@ -51,7 +52,7 @@ const dbConfig = {
   },
 };
 
-const mailtrapConfig = {
+export const mailtrapConfig = {
   token: process.env.MAILTRAP_API_TOKEN!,
   sender: {
     email: process.env.MAILTRAP_SENDER_EMAIL!,
@@ -70,15 +71,13 @@ const mailtrapConfig = {
   webhookSecret: process.env.MAILTRAP_WEBHOOK_SECRET!,
 };
 
-const agendaConfig = {
+export const agendaConfig = {
   every: process.env.EVERY!,
   jobName: process.env.JOB_NAME!,
 };
 
-const githubConfig = {
+export const githubConfig = {
   secret: process.env.GITHUB_WEBHOOK_SECRET!,
   repositoryPath: process.env.REPOSITORY_PATH!,
   timeout: parseInt(process.env.TIMEOUT!),
 };
-
-export { llmConfig, dbConfig, tavilyConfig, mailtrapConfig, agendaConfig, serverConfig, githubConfig, googleConfig };
