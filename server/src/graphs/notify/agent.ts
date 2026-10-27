@@ -26,6 +26,7 @@ import { RecipientSchema } from "@schemas";
 const llmWithTools = llm.bindTools(tools);
 
 const findPlantDirectorNode: GraphNode<typeof AgentState> = async (state) => {
+
   const systemMessage = new SystemMessage(FIND_PLANT_DIRECTOR_PROMPT);
   const response = await llmWithTools.invoke([
     systemMessage,

@@ -121,7 +121,7 @@ Retrieve the data to create the detection record. It should match the following 
   partDescription: string,                          -- description of the part
   qty: integer,                                     -- needed quantity; it can be found from the reason in the incident record
   detectionDate: date,                              -- the date when the detection was made by the agent
-  incidentId: integer,                              -- ID of the incident
+  incidentId: integer,                              -- ID of the incident (should be an ongoing incident with status 'In Progress')
   lastEventDescription: string,                     -- description of the last progress event related to the incident
   lastEventDate: date,                              -- date of the last progress event related to the incident
 }]
@@ -131,11 +131,12 @@ Rules:
   - Dates should be in the format YYYY-MM-DD HH:MM:SS.
   - Strings should not be empty.
   - Quantities should be non-negative integers.
+  - Only include incidents where the status is 'In Progress' not 'Resolved'. (This ensures that only ongoing issues are considered for detection.)
   - lastEventDescription and lastEventDate should correspond to the most recent progress event related to the incident. They can be null if they are not found.
   - Do the calculations carefully to ensure accuracy using 'add', 'subtract', 'multiply', and 'divide' tools.
   - Use the tools provided in the system to perform any necessary action.
   - the final detection record should be accurate and complete in JSON format without additional text.
-  - Only include incidents where the status is 'In Progress' not 'Resolved'.
+
 
 OUTPUT:
   The agent should output a single JSON object matching the structure specified in the TASK section. 

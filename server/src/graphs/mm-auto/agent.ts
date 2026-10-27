@@ -88,7 +88,7 @@ const notifyNode: GraphNode<typeof AgentState> = async (state) => {
     {
       messages: [
         new HumanMessage(
-          `Here are the list of alternative suppliers per part: ${JSON.stringify(state.suppliers)} and the detection records: ${JSON.stringify(state.detections)} notify the appropriate plant directors`,
+          `Here are the list of alternative suppliers per part: ${JSON.stringify(state.suppliers)} and the detection records: ${JSON.stringify(state.detections)}`,
         ),
       ],
     },
@@ -123,12 +123,12 @@ const autoAgentGraph = new StateGraph(AgentState)
   .addNode("respondNode", respondNode)
   .addNode("detectNode", detectNode)
   .addNode("searchNode", searchNode)
-  .addNode("notifyNode", notifyNode)
+  .addNode("informNode", notifyNode)
   .addConditionalEdges(START, detectOrRespond, ["respondNode", "detectNode"])
   .addEdge("respondNode", END)
   .addConditionalEdges("detectNode", shouldSearch, ["searchNode", END])
-  .addEdge("searchNode", "notifyNode")
-  .addEdge("notifyNode", END)
+  .addEdge("searchNode", "informNode")
+  .addEdge("informNode", END)
   .compile({ checkpointer });
 
 export { autoAgentGraph };
