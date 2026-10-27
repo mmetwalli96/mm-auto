@@ -3,7 +3,7 @@ import { z } from "zod"
 const RecipientSchema = z.object({
   partId: z.string(),
   partName: z.string(),
-  supplierName: z.string(),
+  plantName: z.string(),
   first_name: z.string(),
   last_name: z.string(),
   email: z.email(),
