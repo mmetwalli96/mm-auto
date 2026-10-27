@@ -5,7 +5,7 @@ import type { Request, Response, NextFunction } from "express";
 import router from "@/routes";
 import { serverConfig } from "@config";
 import { initializeScheduler, shutdownScheduler } from "@scheduler";
-import { postgresDataSource, neo4jGraph } from "@clients";
+import { postgresDataSource, pgClient, neo4jGraph } from "@clients";
 import { enableQuitKey } from "@utils";
 
 const app = express();
@@ -71,6 +71,7 @@ async function shutdown(signal: NodeJS.Signals) {
       postgresDataSource.isInitialized
         ? postgresDataSource.destroy()
         : Promise.resolve(),
+      pgClient.end(),
       neo4jGraph.close(),
     ]);
     console.log("Shutdown complete");

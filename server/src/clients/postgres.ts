@@ -27,6 +27,10 @@ const pgClient = new Client({
     ssl: dbConfig.postgres.ssl ? { rejectUnauthorized: false } : false,
 });
 
+pgClient.on("error", (error) => {
+    console.error("Unexpected error on PostgreSQL client:", error);
+});
+
 await pgClient.connect();
 
 export { sqlDatabase, postgresDataSource, pgClient };
