@@ -20,7 +20,7 @@ function createSupplyShortfallDetectionJob(agenda: Agenda) {
   agenda.define(agendaConfig.jobName, async (job: Job<JobData>) => {
     const { question } = job.attrs.data;
     const recursionLimit = llmConfig.recursionLimit;
-    const autoThreadId = `auto-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`;
+    const autoThreadId = `mmauto-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`; console.log(`Auto thread ID: ${autoThreadId}`);
     const autoConfig = {
       configurable: { thread_id: autoThreadId },
       recursionLimit: recursionLimit,
