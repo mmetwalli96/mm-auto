@@ -1,6 +1,8 @@
 import fs from "fs";
 import type { CompiledStateGraph } from "@langchain/langgraph";
-import type { Request, Response, NextFunction, RequestHandler } from "express";
+import type { NextFunction, Request, RequestHandler, Response } from 'express';
+import type { ParamsDictionary } from 'express-serve-static-core';
+import type { ParsedQs } from 'qs';
 
 export const saveGraphAsPng = async <S, U, I extends string>(
   graph: CompiledStateGraph<S, U, I, any, any, any, any, any, any, any>,
@@ -17,17 +19,18 @@ export const saveGraphAsPng = async <S, U, I extends string>(
 };
 
 export const asyncHandler = <
-  P = Record<string, string>,
+  P = ParamsDictionary,
   ResBody = unknown,
   ReqBody = unknown,
-  ReqQuery = Record<string, string>,
+  ReqQuery = ParsedQs,
+  Locals extends Record<string, unknown> = Record<string, unknown>,
 >(
   fn: (
-    req: Request<P, ResBody, ReqBody, ReqQuery>,
-    res: Response<ResBody>,
+    req: Request<P, ResBody, ReqBody, ReqQuery, Locals>,
+    res: Response<ResBody, Locals>,
     next: NextFunction,
   ) => Promise<unknown>,
-): RequestHandler<P, ResBody, ReqBody, ReqQuery> => {
+): RequestHandler<P, ResBody, ReqBody, ReqQuery, Locals> => {
   return (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };

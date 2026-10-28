@@ -1,66 +1,32 @@
-import crypto from "crypto";
-import { githubConfig, llmConfig, mailtrapConfig } from "@config";
+import { githubConfig, llmConfig } from "@config";
 import type { Request, Response } from "express";
 import { asyncHandler } from "@utils";
 import { startScheduler, stopScheduler } from "@services";
 import { randomUUID } from "crypto";
-
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { HumanMessage } from "@langchain/core/messages";
 import { autoAgentGraph } from "@graphs";
 import { resetPg, resetNeo4j } from "@/models/post";
-import { serverConfig } from "@config";
+
 
 const execFileAsync = promisify(execFile);
 const SERVER_DIR = process.cwd();
 
-
 export const startDetectionJob = asyncHandler(
-  async (req: Request, res: Response) => {
-    const token = req.headers.authorization?.split(" ")?.[1] ?? "";
-    const serverSecret = serverConfig.secret;
-
-    const tokenBuffer = Buffer.from(token);
-    const secretBuffer = Buffer.from(String(serverSecret));
-    if (
-      tokenBuffer.length !== secretBuffer.length ||
-      !crypto.timingSafeEqual(tokenBuffer, secretBuffer)
-    ) {
-      return res.status(401).json({ error: "Unauthorized Access Detected" });
-    }
-    const { interval, question } = req.body ?? {};
-    if (interval !== undefined && typeof interval !== "string") {
-      return res.status(400).json({
-        error:
-          "interval must be a string, e.g. '5 minutes' or a cron expression",
-      });
-    }
-    const result = await startScheduler(interval, question);
+  async (_: Request, res: Response) => {
+    const { interval } = res.locals.body;
+    const result = await startScheduler(interval);
     return res.status(201).json({ status: "scheduled", ...result });
   },
 );
 
 export const stopDetectionJob = asyncHandler(
-  async (req: Request, res: Response) => {
-    const token = req.headers.authorization?.split(" ")?.[1] ?? "";
-    const serverSecret = serverConfig.secret;
-
-    const tokenBuffer = Buffer.from(token);
-    const secretBuffer = Buffer.from(String(serverSecret));
-    if (
-      tokenBuffer.length !== secretBuffer.length ||
-      !crypto.timingSafeEqual(tokenBuffer, secretBuffer)
-    ) {
-      return res.status(401).json({ error: "Unauthorized Access Detected" });
-    }
-    const { mode } = req.body ?? {};
-    if (mode !== undefined && (mode !== "disable" && mode !== "cancel")) {
-      return res.status(400).json({
-        error: "mode must be of type { 'disable', 'cancel' }",
-      });
-    }
+  async (_: Request, res: Response) => {
+    const { mode } = res.locals.body;
+    console.log('Stopping detection job with mode:', mode);
     const result = await stopScheduler(mode);
+
     if ("statusMessage" in result) {
       return res.status(500).json(result);
     }
@@ -70,16 +36,6 @@ export const stopDetectionJob = asyncHandler(
 
 export const updateRepository = asyncHandler(
   async (req: Request, res: Response) => {
-    if (!req.rawBody) return res.status(400).send('Missing raw body');
-
-    const signature = req.get('X-Hub-Signature-256')!;
-    const computedSignature = 'sha256=' + crypto.createHmac('sha256', githubConfig.secret).update(req.rawBody!).digest('hex');
-    const a = Buffer.from(signature);
-    const b = Buffer.from(computedSignature);
-
-    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
-      return res.sendStatus(401).json({ error: "Unauthorized Access" });
-    }
 
     const event = req.get('X-GitHub-Event')!;
     if (event === 'ping') {
@@ -117,15 +73,6 @@ export const updateRepository = asyncHandler(
 export const followUp = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const signature = req.headers['mailtrap-signature'];
-      const rawBody = req.rawBody!;
-      const computedSignature = crypto.createHmac('sha256', mailtrapConfig.webhookSecret).update(rawBody).digest('hex');
-
-      const a = Buffer.from(signature);
-      const b = Buffer.from(computedSignature);
-      if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
-        return res.sendStatus(401).json({ error: "Unauthorized Access" });
-      }
 
       const body = req.body!
       const messageId = body.events?.at(0).message_id;
@@ -139,6 +86,8 @@ export const followUp = asyncHandler(
         text_body: textBody,
       }
 
+      res.status(202).send('Accepted');
+
       const recursionLimit = llmConfig.recursionLimit;
       const autoThreadId = `mmauto-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`;
       const autoConfig = {
@@ -150,7 +99,8 @@ export const followUp = asyncHandler(
       Follow-up received with the following metadata of the director response:
       ${JSON.stringify(responseMetadata, null, 2)}
       `);
-      const response = await autoAgentGraph.invoke(
+      
+      await autoAgentGraph.invoke(
         {
           messages: [humanMessage],
           toResolve: true
@@ -159,7 +109,7 @@ export const followUp = asyncHandler(
       );
 
 
-      return res.status(200).json({ status: "follow-up received", messages: response.messages });
+      return null;
 
     } catch (error) {
       console.error('Error handling follow-up:', error);
@@ -171,18 +121,7 @@ export const followUp = asyncHandler(
 );
 
 export const reset = asyncHandler(
-  async (req: Request, res: Response) => {
-    const token = req.headers.authorization?.split(" ")?.[1] ?? "";
-    const serverSecret = serverConfig.secret;
-
-    const tokenBuffer = Buffer.from(token);
-    const secretBuffer = Buffer.from(String(serverSecret));
-    if (
-      tokenBuffer.length !== secretBuffer.length ||
-      !crypto.timingSafeEqual(tokenBuffer, secretBuffer)
-    ) {
-      return res.status(401).json({ error: "Unauthorized Access Detected" });
-    }
+  async (_: Request, res: Response) => {
 
     const pgState = await resetPg();
     if (!pgState.success) {
@@ -195,7 +134,6 @@ export const reset = asyncHandler(
     }
 
     return res.status(200).json({ status: "PostgreSQL and Neo4j reset successfully" });
-
 
   },
 );
