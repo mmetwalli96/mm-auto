@@ -3,7 +3,7 @@
 set -euo pipefail
 
 REPO_DIR="${REPO_DIR:-$HOME/mm-auto}"
-PM2_APP="${PM2_APP:-app}"
+PM2_APP="${PM2_APP:-mm-auto}"
 HEALTH_URL="${HEALTH_URL:-http://127.0.0.1:3000/mm-auto/health/}"
 COMMIT_SHA="${COMMIT_SHA:?COMMIT_SHA must be set}"
 
