@@ -7,6 +7,12 @@ PM2_APP="${PM2_APP:-mm-auto}"
 HEALTH_URL="${HEALTH_URL:-http://127.0.0.1:3000/mm-auto/health/}"
 COMMIT_SHA="${COMMIT_SHA:?COMMIT_SHA must be set}"
 
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  # shellcheck disable=SC1091
+  . "$NVM_DIR/nvm.sh"
+fi
+
 for cmd in git node npm pm2 curl; do
   command -v "$cmd" > /dev/null || { echo "Missing command: $cmd"; exit 1; }
 done
