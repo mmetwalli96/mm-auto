@@ -14,7 +14,7 @@ router.get("/health", controllers.health);
 // post
 router.post("/jobs/start", bearer, validate({ body: StartJobBodySchema }), controllers.startDetectionJob);
 router.post("/jobs/stop", bearer, validate({ body: StopJobBodySchema }), controllers.stopDetectionJob);
-router.post("/webhook/mailtrap/follow", auth.requireHmac({ header: "X-Mailtrap-Signature", secret: mailtrapConfig.webhookSecret }), controllers.followUp);
+router.post("/webhook/mailtrap/follow", auth.requireHmac({ header: "mailtrap-signature", secret: mailtrapConfig.webhookSecret }), controllers.followUp);
 router.post("/db/reset", bearer, controllers.reset);
 
 // patch
