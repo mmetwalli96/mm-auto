@@ -1,17 +1,11 @@
-import { githubConfig, llmConfig } from "@config";
+import { llmConfig } from "@config";
 import type { Request, Response } from "express";
 import { asyncHandler } from "@utils";
 import { startScheduler, stopScheduler } from "@services";
 import { randomUUID } from "crypto";
-import { execFile } from 'child_process';
-import { promisify } from 'util';
 import { HumanMessage } from "@langchain/core/messages";
 import { autoAgentGraph } from "@graphs";
 import { resetPg, resetNeo4j } from "@/models/post";
-
-
-const execFileAsync = promisify(execFile);
-const SERVER_DIR = process.cwd();
 
 export const startDetectionJob = asyncHandler(
   async (_: Request, res: Response) => {
@@ -31,42 +25,6 @@ export const stopDetectionJob = asyncHandler(
       return res.status(500).json(result);
     }
     return res.status(200).json({ ...result });
-  },
-);
-
-export const updateRepository = asyncHandler(
-  async (req: Request, res: Response) => {
-
-    const event = req.get('X-GitHub-Event')!;
-    if (event === 'ping') {
-      return res.status(200).send('pong');
-    }
-    if (event !== 'push') {
-      return res.status(400).json({ error: "Unsupported event type" });
-    }
-    const { deleted, ref } = req.body!;
-
-    if (deleted) return res.status(204).end();
-    if (ref !== 'refs/heads/master') return res.status(204).end();
-
-    res.status(202).send('Accepted');
-
-    try {
-      const { stdout } = await execFileAsync('git', ['pull', '--ff-only'], {
-        cwd: githubConfig.repositoryPath,
-        env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
-        timeout: githubConfig.timeout,
-      });
-      console.log('git pull:', stdout);
-
-      await execFileAsync('npm', ['ci', '--include=dev'], { cwd: SERVER_DIR });
-      await execFileAsync('npm', ['run', 'build'], { cwd: SERVER_DIR });
-      await execFileAsync('pm2', ['reload', 'app']);
-    } catch (error) {
-      console.error('Error during repository update:', error);
-    }
-
-    return null;
   },
 );
 
