@@ -2,6 +2,7 @@
   "extends": "@tsconfig/recommended",
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": "./src",
     "target": "ES2022",
     "lib": ["ES2022", "ES2022.Object", "DOM"],
     "module": "ES2022",
@@ -16,7 +17,7 @@
     "allowJs": true,
     "strict": true,
     "types": ["node", "express"],
-    "strictFunctionTypes": false,
+    "strictFunctionTypes": true,
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["./src/*"],
@@ -30,6 +31,6 @@
       "@controllers": ["./src/controllers"],
     }
   },
-  "include": ["**/*.ts", "**/*.js"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
