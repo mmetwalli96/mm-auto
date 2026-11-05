@@ -12,7 +12,7 @@ In car manufacturing, when a supplier cannot deliver a part, someone has to noti
 
 To model the complex relationship in a car manufacturing company, **NEO4J** was used. It suits this application as it can capture the relationship deepth that exists in the data. 
 
-![](resources/imgs/docs/neo4j.png)
+![](resources/imgs/docs/graph.png)
 
 - **Nodes:** `Car`, `System`, `Part`, `Material`, `Supplier`, `Plant`, `Line`, `Station`, `Employee`, `Shift`. Every node has an `id`.
 - **Relationships:**
