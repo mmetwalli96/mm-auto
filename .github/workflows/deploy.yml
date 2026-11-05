@@ -59,4 +59,4 @@ jobs:
             --ssh-key-expire-after=30m \
             --quiet \
             --command "sudo -iu ${{ vars.APP_USER }} env COMMIT_SHA=${{ github.sha }} bash -s" \
-            < server/scripts/deploy.sh
+            < .github/scripts/deploy.sh
