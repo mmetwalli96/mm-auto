@@ -12,7 +12,7 @@ In car manufacturing, when a supplier cannot deliver a part, someone has to noti
 
 To model the complex relationship in a car manufacturing company, **NEO4J** was used. It suits this application as it can capture the relationship deepth that exists in the data. 
 
-![](resources/imgs/docs/graph.png)
+![](resources/imgs/data-modeling/graph.png)
 
 - **Nodes:** `Car`, `System`, `Part`, `Material`, `Supplier`, `Plant`, `Line`, `Station`, `Employee`, `Shift`. Every node has an `id`.
 - **Relationships:**
@@ -28,7 +28,7 @@ To model the complex relationship in a car manufacturing company, **NEO4J** was 
 
 SQL databases is really the best choice for tabular data and it is used to store information and meta data related to interruptions and incidents.
 
-![](resources/imgs/docs/sql.png)
+![](resources/imgs/data-modeling/sql.png)
 
 | Table | Purpose | Columns |
 |---|---|---|
@@ -44,4 +44,4 @@ There is a shortfall in the supply chain. The shortfall appears as the supply-sh
 
 Make resolving supply shortfalls timely and documented, using an agent that can **detect, search, notify and follow**.
 
-![](resources/imgs/docs/solution.png)
+![](resources/imgs/solution.png)
