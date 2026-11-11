@@ -18,7 +18,6 @@ export const startDetectionJob = asyncHandler(
 export const stopDetectionJob = asyncHandler(
   async (_: Request, res: Response) => {
     const { mode } = res.locals.body;
-    console.log('Stopping detection job with mode:', mode);
     const result = await stopScheduler(mode);
 
     if ("statusMessage" in result) {
@@ -71,7 +70,7 @@ export const followUp = asyncHandler(
 
     } catch (error) {
       console.error('Error handling follow-up:', error);
-      return res.status(500).json({ error: 'Internal Server Error', message: (error as Error).message });
+      return res.status(500).json({ success: false, error: 'Internal Server Error', message: (error as Error).message });
     }
 
 
@@ -83,15 +82,15 @@ export const reset = asyncHandler(
 
     const pgState = await resetPg();
     if (!pgState.success) {
-      return res.status(500).json({ status: "Failed to reset PostgreSQL", error: pgState.error! });
+      return res.status(500).json({ success: false, message: "Failed to reset PostgreSQL & Neo4j", error: pgState.error! });
     }
 
     const neo4jState = await resetNeo4j();
     if (!neo4jState.success) {
-      return res.status(500).json({ status: "Failed to reset Neo4j", error: neo4jState.error! });
+      return res.status(500).json({ success: false, message: "Failed to reset Neo4j only", error: neo4jState.error! });
     }
 
-    return res.status(200).json({ status: "PostgreSQL and Neo4j reset successfully" });
+    return res.status(200).json({ success: true, message: "PostgreSQL and Neo4j reset successfully" });
 
   },
 );

@@ -29,7 +29,7 @@ export const resetPg = async (): Promise<ResetState> => {
 
     try {
         await pgClient.query(QUERY);
-        const { stdout, stderr } = await execFileAsync(
+        const { stderr } = await execFileAsync(
             "psql",
             [
                 "-v", "ON_ERROR_STOP=1",
@@ -51,7 +51,6 @@ export const resetPg = async (): Promise<ResetState> => {
             }
         );
         if (stderr) { console.error(stderr); return { success: false, error: stderr }; }
-        console.log(stdout);
         return { success: true };
 
     } catch (error) {
@@ -88,7 +87,7 @@ export const resetNeo4j = async (): Promise<ResetState> => {
         const schemaFilePath = path.join(DB_DIR, "..", "tmp", "schema.cypher");
         await fs.writeFile(schemaFilePath, updatedCypher, "utf-8");
 
-        const { stdout, stderr } = await execFileAsync(
+        const { stderr } = await execFileAsync(
             "cypher-shell",
             [
                 "-a", dbConfig.neo4j.uri,
@@ -105,7 +104,6 @@ export const resetNeo4j = async (): Promise<ResetState> => {
         );
 
         if (stderr) { console.error(stderr); return { success: false, error: stderr }; }
-        console.log(stdout);
 
         return { success: true };
     } catch (error) {
