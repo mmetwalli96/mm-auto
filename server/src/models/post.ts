@@ -24,6 +24,7 @@ export const resetPg = async (): Promise<ResetState> => {
                     BEGIN;
                     TRUNCATE progress_tracker, incident_history, interruption_codes RESTART IDENTITY CASCADE;
                     DROP TABLE IF EXISTS progress_tracker, incident_history, interruption_codes CASCADE;
+                    DROP FUNCTION IF EXISTS notify_table_change();
                     COMMIT;
                 `;
 
@@ -35,7 +36,9 @@ export const resetPg = async (): Promise<ResetState> => {
                 "-v", "ON_ERROR_STOP=1",
                 "--single-transaction",
                 "-f", path.join(DB_DIR, "postgres", "schema.sql"),
+                "-f", path.join(DB_DIR, "postgres", "functions.sql"),
                 "-f", path.join(DB_DIR, "postgres", "seed.sql"),
+                "-f", path.join(DB_DIR, "postgres", "triggers.sql"),
             ],
             {
                 env: {
