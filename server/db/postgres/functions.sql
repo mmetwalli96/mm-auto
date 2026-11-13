@@ -16,7 +16,7 @@ BEGIN
         'record', row_to_json(rec)
     );
 
-    IF octet_length(payload) > 7500 THEN
+    IF octet_length(payload::text) > 7500 THEN
         payload := json_build_object(
             'table_name', TG_TABLE_NAME,
             'operation', TG_OP,
