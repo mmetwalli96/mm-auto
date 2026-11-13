@@ -3,9 +3,10 @@ import cors from "cors";
 import type { Request, Response, NextFunction } from "express";
 
 import router from "@/routes";
+import { runListenToTableChanges } from "@services";
 import { serverConfig } from "@config";
 import { initializeScheduler, shutdownScheduler } from "@scheduler";
-import { postgresDataSource, pgClient, neo4jGraph } from "@clients";
+import { postgresDataSource, neo4jGraph } from "@clients";
 import { enableQuitKey } from "@utils";
 
 const app = express();
@@ -44,9 +45,11 @@ const host = serverConfig.host;
 await initializeScheduler();
 
 const server = app.listen(port, host, () => {
-  console.log(`Server running at http://${host}:${port}/mm-auto/health/`);
+  console.log(`Check health at http://${host}:${port}/mm-auto/health`);
   console.log("Press 'q' to quit.");
 });
+
+runListenToTableChanges();
 
 enableQuitKey();
 
@@ -71,7 +74,6 @@ async function shutdown(signal: NodeJS.Signals) {
       postgresDataSource.isInitialized
         ? postgresDataSource.destroy()
         : Promise.resolve(),
-      pgClient.end(),
       neo4jGraph.close(),
     ]);
     console.log("Shutdown complete");

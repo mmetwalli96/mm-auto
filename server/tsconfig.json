@@ -29,6 +29,7 @@
       "@scheduler": ["./src/scheduler"],
       "@services": ["./src/services"],
       "@controllers": ["./src/controllers"],
+      "@models": ["./src/models"],
     }
   },
   "include": ["src"],

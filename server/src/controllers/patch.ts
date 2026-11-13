@@ -1,4 +1,4 @@
-import { updateEmployeeRecord } from "@/models/patch";
+import { updateEmployeeRecord } from "@models";
 import { Request, Response } from "express";
 import { asyncHandler } from "@utils";
 

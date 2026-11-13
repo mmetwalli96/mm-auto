@@ -10,15 +10,18 @@ const postgresDataSource = new DataSource({
     username: dbConfig.postgres.userName,
     password: dbConfig.postgres.password,
     database: dbConfig.postgres.database,
-    ssl:  dbConfig.postgres.ssl ? { rejectUnauthorized: false } : false,
+    ssl: dbConfig.postgres.ssl ? { rejectUnauthorized: false } : false,
 });
 
 const sqlDatabase = await SqlDatabase.fromDataSourceParams({
     appDataSource: postgresDataSource,
 });
 
-const { Client } = pg;
-const pgClient = new Client({
+const { Client, Pool } = pg;
+
+
+
+const pgPool = new Pool({
     host: dbConfig.postgres.host,
     port: dbConfig.postgres.port,
     user: dbConfig.postgres.userName,
@@ -27,10 +30,20 @@ const pgClient = new Client({
     ssl: dbConfig.postgres.ssl ? { rejectUnauthorized: false } : false,
 });
 
-pgClient.on("error", (error) => {
-    console.error("Unexpected error on PostgreSQL client:", error);
-});
+function createPgClient() {
+    const pgClient = new Client({
+        host: dbConfig.postgres.host,
+        port: dbConfig.postgres.port,
+        user: dbConfig.postgres.userName,
+        password: dbConfig.postgres.password,
+        database: dbConfig.postgres.database,
+        ssl: dbConfig.postgres.ssl ? { rejectUnauthorized: false } : false,
+    });
 
-await pgClient.connect();
+    pgClient.on("error", (error) => {
+        console.error("Unexpected error on PostgreSQL client:", error);
+    });
+    return pgClient;
+}
 
-export { sqlDatabase, postgresDataSource, pgClient };
+export { sqlDatabase, postgresDataSource, createPgClient, pgPool };

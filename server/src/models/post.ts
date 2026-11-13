@@ -1,4 +1,4 @@
-import { pgClient, bucket, neo4jGraph } from "@clients";
+import { createPgClient, bucket, neo4jGraph } from "@clients";
 import { execFile } from "child_process";
 import { promisify } from "util";
 import path from "path";
@@ -29,7 +29,15 @@ export const resetPg = async (): Promise<ResetState> => {
                 `;
 
     try {
-        await pgClient.query(QUERY);
+
+        const pgClient = createPgClient();
+        try {
+            await pgClient.connect();
+            await pgClient.query(QUERY);
+        } finally {
+            await pgClient.end().catch(() => { });
+        }
+
         const { stderr } = await execFileAsync(
             "psql",
             [
@@ -58,7 +66,6 @@ export const resetPg = async (): Promise<ResetState> => {
 
     } catch (error) {
         console.error('Error resetting PostgreSQL:', error);
-        await pgClient.query('ROLLBACK');
         return { success: false, error: (error as Error).message };
     }
 
@@ -105,6 +112,9 @@ export const resetNeo4j = async (): Promise<ResetState> => {
                 }
             }
         );
+        await fs.unlink(schemaFilePath).catch((err: NodeJS.ErrnoException) => {
+            console.error('Error deleting schema file:', err);
+        });
 
         if (stderr) { console.error(stderr); return { success: false, error: stderr }; }
 

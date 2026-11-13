@@ -11,6 +11,10 @@ const bearer = auth.requireBearer(serverConfig.secret);
 // get
 router.get("/health", controllers.health);
 
+// protected routes
+// get
+router.get("/db/table-changes", bearer, controllers.tableChangesStream);
+
 // post
 router.post("/jobs/start", bearer, validate({ body: StartJobBodySchema }), controllers.startDetectionJob);
 router.post("/jobs/stop", bearer, validate({ body: StopJobBodySchema }), controllers.stopDetectionJob);
