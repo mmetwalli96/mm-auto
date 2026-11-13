@@ -5,7 +5,7 @@ import type { Response } from 'express';
 import type { TableChangeNotification } from '@/types/sse';
 
 
-const CHANNEL = 'table_changes';
+const CHANNEL = 'table_update';
 const RECONNECT_MS = 2000;
 const clients = new Set<Response>();
 
@@ -24,6 +24,7 @@ export function addClient(res: Response): () => void {
 
 async function onNotification(msg: Notification): Promise<void> {
     try {
+        console.log('Received notification:', msg);
         if (!msg.payload) return;
         const change = JSON.parse(msg.payload) as TableChangeNotification;
         if (!isTable(change.table)) return;
