@@ -24,16 +24,15 @@ export function addClient(res: Response): () => void {
 
 async function onNotification(msg: Notification): Promise<void> {
     try {
-        console.log('Received notification:', msg);
         if (!msg.payload) return;
         const change = JSON.parse(msg.payload) as TableChangeNotification;
-        if (!isTable(change.table)) return;
+        if (!isTable(change.table_name)) return;
 
-        let row: unknown = change.row ?? null;
+        let row: unknown = change.record ?? null;
 
-        if (row === null && change.op !== 'DELETE') {
+        if (row === null && change.operation !== 'DELETE') {
             const result = await pgPool.query<{ row: unknown }>(
-                `SELECT row_to_json(t) AS row FROM ${change.table} t WHERE t.id = $1`,
+                `SELECT row_to_json(t) AS row FROM ${change.table_name} t WHERE t.id = $1`,
                 [change.id],
             );
             const fetched = result.rows[0];
@@ -41,7 +40,7 @@ async function onNotification(msg: Notification): Promise<void> {
             row = fetched.row;
         }
 
-        broadcast(change.table, { op: change.op, id: change.id, row });
+        broadcast(change.table_name, { operation: change.operation, id: change.id, row });
     } catch (error) {
         console.error('Failed to handle Table Change Notification:', error);
     }

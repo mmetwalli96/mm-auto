@@ -13,8 +13,18 @@ BEGIN
         'table_name', TG_TABLE_NAME,
         'operation', TG_OP,
         'id', rec.id,
-        'data', row_to_json(rec)
+        'record', row_to_json(rec)
     );
+
+    IF octet_length(payload) > 7500 THEN
+        payload := json_build_object(
+            'table_name', TG_TABLE_NAME,
+            'operation', TG_OP,
+            'id', rec.id
+        );
+        RETURN NULL;
+    END IF;
+
     PERFORM pg_notify('table_update', payload::text);
     RETURN NULL;
 END;

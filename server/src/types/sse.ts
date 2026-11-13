@@ -14,10 +14,10 @@ export interface ChangeEvent<Row = IncidentHistoryRow | ProgressTrackerRow> {
 }
 
 export interface TableChangeNotification {
-  table: string;
-  op: Operation;
+  table_name: string;
+  operation: Operation;
   id: number;
-  row?: Record<string, unknown>; // omitted when the row was too large for NOTIFY
+  record?: Record<string, unknown>;
 }
 
 export interface Options {
