@@ -22,6 +22,6 @@ router.post("/webhook/mailtrap/follow", auth.requireHmac({ header: "mailtrap-sig
 router.post("/db/reset", bearer, controllers.reset);
 
 // patch
-router.patch("/db/update/employee/:id", bearer, validate({ params: UpdateEmployeeParamsSchema, body: UpdateEmployeeRecordBody }), controllers.updateEmployeeData);
+router.patch("/db/update/employee/contact/:id", bearer, validate({ params: UpdateEmployeeParamsSchema, body: UpdateEmployeeRecordBody }), controllers.updateEmployeeData);
 
 export default router;
