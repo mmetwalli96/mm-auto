@@ -11,11 +11,11 @@ import {
     ConditionalEdgeRouter,
 } from "@langchain/langgraph";
 
-import { tools, toolsByName } from "@/graphs/follow/tools";
+import { tools, toolsByName } from "@/agent/follow/tools";
 import { llm } from "@clients";
-import { AgentState } from "@/graphs/follow/state";
-import { FOLLOW_UP_PROMPT } from "@/graphs/follow/prompts";
-import { checkpointer } from "@/graphs/follow/checkpointer";
+import { AgentState } from "@/agent/follow/state";
+import { FOLLOW_UP_PROMPT } from "@/agent/follow/prompts";
+import { checkpointer } from "@/agent/follow/checkpointer";
 
 const llmWithTools = llm.bindTools(tools);
 

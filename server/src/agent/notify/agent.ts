@@ -13,14 +13,14 @@ import {
   ConditionalEdgeRouter,
 } from "@langchain/langgraph";
 
-import { tools, toolsByName } from "@/graphs/notify/tools";
+import { tools, toolsByName } from "@/agent/notify/tools";
 import { llm } from "@clients";
-import { AgentState } from "@/graphs/notify/state";
+import { AgentState } from "@/agent/notify/state";
 import {
   NOTIFY_PROMPT,
   FIND_PLANT_DIRECTOR_PROMPT,
-} from "@/graphs/notify/prompts";
-import { checkpointer } from "@/graphs/notify/checkpointer";
+} from "@/agent/notify/prompts";
+import { checkpointer } from "@/agent/notify/checkpointer";
 import { RecipientSchema } from "@schemas";
 
 const llmWithTools = llm.bindTools(tools);

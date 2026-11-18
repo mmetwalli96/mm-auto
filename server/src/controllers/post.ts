@@ -4,7 +4,7 @@ import { asyncHandler } from "@utils";
 import { startScheduler, stopScheduler } from "@services";
 import { randomUUID } from "crypto";
 import { HumanMessage } from "@langchain/core/messages";
-import { autoAgentGraph } from "@graphs";
+import { autoAgentGraph } from "@agent";
 import { resetPg, resetNeo4j } from "@models";
 
 export const startDetectionJob = asyncHandler(

@@ -8,12 +8,12 @@ import {
 } from "@langchain/langgraph";
 import { randomUUID } from "crypto";
 
-import { AgentState } from "@/graphs/mm-auto/state";
-import { checkpointer } from "@/graphs/mm-auto/checkpointer";
-import { detector } from "@/graphs/detect/agent";
-import { searcher } from "@/graphs/search/agent";
-import { notifier } from "@/graphs/notify/agent";
-import { followUpAgent } from "@/graphs/follow/agent";
+import { AgentState } from "@/agent/mm-auto/state";
+import { checkpointer } from "@/agent/mm-auto/checkpointer";
+import { detector } from "@/agent/detect/agent";
+import { searcher } from "@/agent/search/agent";
+import { notifier } from "@/agent/notify/agent";
+import { followUpAgent } from "@/agent/follow/agent";
 import { llmConfig } from "@config";
 
 const recursionLimit = llmConfig.recursionLimit;

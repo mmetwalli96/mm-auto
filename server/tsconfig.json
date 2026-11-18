@@ -21,7 +21,7 @@
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@graphs": ["./src/graphs"],
+      "@agent": ["./src/agent"],
       "@config": ["./src/config"],
       "@utils": ["./src/utils"],
       "@clients": ["./src/clients"],

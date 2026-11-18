@@ -13,15 +13,15 @@ import {
 } from "@langchain/langgraph";
 import { z } from "zod";
 
-import { tools, toolsByName } from "@/graphs/detect/tools";
+import { tools, toolsByName } from "@/agent/detect/tools";
 import { llm } from "@clients";
-import { AgentState } from "@/graphs/detect/state";
+import { AgentState } from "@/agent/detect/state";
 import {
   SHORTFALL_STATUS_PROMPT,
   DETECTION_PROMPT,
-} from "@/graphs/detect/prompts";
+} from "@/agent/detect/prompts";
 import { DetectionSchema } from "@schemas";
-import { checkpointer } from "@/graphs/detect/checkpointer";
+import { checkpointer } from "@/agent/detect/checkpointer";
 
 const llmWithTools = llm.bindTools(tools);
 

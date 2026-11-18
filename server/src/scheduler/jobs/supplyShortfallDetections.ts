@@ -3,7 +3,7 @@ import { HumanMessage } from "@langchain/core/messages";
 import { randomUUID } from "crypto";
 
 import type { Detection, Supplier } from "@schemas";
-import { autoAgentGraph } from "@graphs";
+import { autoAgentGraph } from "@agent";
 import { llmConfig, agendaConfig } from "@config";
 
 type JobData = {
