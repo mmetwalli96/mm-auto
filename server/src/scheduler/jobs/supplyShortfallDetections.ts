@@ -3,7 +3,7 @@ import { HumanMessage } from "@langchain/core/messages";
 import { randomUUID } from "crypto";
 
 import type { Detection, Supplier } from "@schemas";
-import { autoAgentGraph } from "@agent";
+import { mmautoAgent } from "@/agent/graph";
 import { llmConfig, agendaConfig } from "@config";
 
 type JobData = {
@@ -13,20 +13,19 @@ type JobData = {
   notifierResponse?: string;
 };
 
-const DETECTION_QUESTION =
-  "Detect supply shortfall to create detection record if it exists.";
+const DETECTION_QUESTION = "Detect supply shortfall to create detection record if it exists.";
 
 function createSupplyShortfallDetectionJob(agenda: Agenda) {
   agenda.define(agendaConfig.jobName, async (job: Job<JobData>) => {
     const { question } = job.attrs.data;
     const recursionLimit = llmConfig.recursionLimit;
-    const autoThreadId = `mmauto-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`; console.log(`Auto thread ID: ${autoThreadId}`);
+    const autoThreadId = `mmauto-${new Date().toISOString()}-${randomUUID().slice(0, 12)}`;
     const autoConfig = {
       configurable: { thread_id: autoThreadId },
       recursionLimit: recursionLimit,
     };
 
-    const autoAgentResponse = await autoAgentGraph.invoke(
+    const autoAgentResponse = await mmautoAgent.invoke(
       {
         messages: [new HumanMessage(question)],
         toResolve: false,

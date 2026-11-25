@@ -3,6 +3,9 @@ import type { CompiledStateGraph } from "@langchain/langgraph";
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import type { ParamsDictionary } from 'express-serve-static-core';
 import type { ParsedQs } from 'qs';
+import { dbConfig } from "@config";
+import { MongoClient } from "mongodb";
+import { MongoDBSaver } from "@langchain/langgraph-checkpoint-mongodb";
 
 export const saveGraphAsPng = async <S, U, I extends string>(
   graph: CompiledStateGraph<S, U, I, any, any, any, any, any, any, any>,
@@ -47,4 +50,20 @@ export const enableQuitKey = (): void => {
       process.kill(0, "SIGINT");
     }
   });
+};
+
+export const createCheckpointer = (collection: string) => {
+  const mongoAddress = `${dbConfig.mongo.protocol}://${dbConfig.mongo.userName}:${dbConfig.mongo.password}@${dbConfig.mongo.host}/?appName=mmauto-agents`;
+  const checkpointCollectionName = `${collection}_checkpoints`;
+  const collectionWritesCollectionName = `${collection}_checkpoint_writes`;
+
+  const mongoClient = new MongoClient(mongoAddress);
+
+  const checkpointer = new MongoDBSaver({
+    client: mongoClient,
+    dbName: dbConfig.mongo.database.agent,
+    checkpointCollectionName: checkpointCollectionName,
+    checkpointWritesCollectionName: collectionWritesCollectionName,
+  });
+  return checkpointer;
 };

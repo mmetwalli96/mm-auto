@@ -4,7 +4,7 @@ import { asyncHandler } from "@utils";
 import { startScheduler, stopScheduler } from "@services";
 import { randomUUID } from "crypto";
 import { HumanMessage } from "@langchain/core/messages";
-import { autoAgentGraph } from "@agent";
+import { mmautoAgent } from "@/agent/graph";
 import { resetPg, resetNeo4j } from "@models";
 
 export const startDetectionJob = asyncHandler(
@@ -57,7 +57,7 @@ export const followUp = asyncHandler(
       ${JSON.stringify(responseMetadata, null, 2)}
       `);
       
-      await autoAgentGraph.invoke(
+      await mmautoAgent.invoke(
         {
           messages: [humanMessage],
           toResolve: true

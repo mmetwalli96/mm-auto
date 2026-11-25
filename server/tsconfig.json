@@ -2,7 +2,7 @@
   "extends": "@tsconfig/recommended",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "target": "ES2022",
     "lib": ["ES2022", "ES2022.Object", "DOM"],
     "module": "ES2022",
@@ -21,7 +21,6 @@
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@agent": ["./src/agent"],
       "@config": ["./src/config"],
       "@utils": ["./src/utils"],
       "@clients": ["./src/clients"],
