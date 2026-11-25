@@ -17,7 +17,7 @@ import { z } from "zod";
 
 import { createCheckpointer } from "@utils";
 import { FOLLOW_UP_PROMPT } from "@/agent/prompts";
-import { replyEmailTool } from "@/agent/tools/notification";
+import { replyEmailTool, getEmailsTool } from "@/agent/tools/notification";
 import { add, subtract } from "@/agent/tools/math";
 import { readSqlTool, readNeo4jTool, clearInterruptionCodeTool, createSupplyTool, addEventTool, setIncidentStatusTool } from "@/agent/tools/query";
 import { llm } from "@clients";
@@ -41,6 +41,7 @@ const tools = [
     addEventTool,
     setIncidentStatusTool,
     replyEmailTool,
+    getEmailsTool,
     add,
     subtract
 ]
