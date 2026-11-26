@@ -82,15 +82,15 @@ export const reset = asyncHandler(
 
     const pgState = await resetPg();
     if (!pgState.success) {
-      return res.status(500).json({ success: false, message: "Failed to reset PostgreSQL & Neo4j", error: pgState.error! });
+      return res.status(500).json({ success: false, message: "Failed to reset", error: pgState.error! });
     }
 
     const neo4jState = await resetNeo4j();
     if (!neo4jState.success) {
-      return res.status(500).json({ success: false, message: "Failed to reset Neo4j only", error: neo4jState.error! });
+      return res.status(500).json({ success: false, message: "Failed to reset graph database only", error: neo4jState.error! });
     }
 
-    return res.status(200).json({ success: true, message: "PostgreSQL and Neo4j reset successfully" });
+    return res.status(200).json({ success: true, message: "The system data has been reset successfully" });
 
   },
 );
