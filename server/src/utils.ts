@@ -1,11 +1,14 @@
 import fs from "fs";
+import { dbConfig } from "@config";
+import { MongoClient } from "mongodb";
+import { MongoDBSaver } from "@langchain/langgraph-checkpoint-mongodb";
+
+import type { Clients } from '@/types/sse';
 import type { CompiledStateGraph } from "@langchain/langgraph";
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import type { ParamsDictionary } from 'express-serve-static-core';
 import type { ParsedQs } from 'qs';
-import { dbConfig } from "@config";
-import { MongoClient } from "mongodb";
-import { MongoDBSaver } from "@langchain/langgraph-checkpoint-mongodb";
+
 
 export const saveGraphAsPng = async <S, U, I extends string>(
   graph: CompiledStateGraph<S, U, I, any, any, any, any, any, any, any>,
@@ -67,3 +70,16 @@ export const createCheckpointer = (collection: string) => {
   });
   return checkpointer;
 };
+
+export function send(res: Response, event: string, data: unknown): void {
+    res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+}
+
+export function broadcast(event: string, data: unknown, clients: Clients): void {
+    for (const res of clients) send(res, event, data);
+}
+
+export function addClient(res: Response, clients: Clients): () => void {
+    clients.add(res);
+    return () => clients.delete(res);
+}

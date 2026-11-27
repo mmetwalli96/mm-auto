@@ -1,5 +1,6 @@
 import type { IncidentHistoryRow, ProgressTrackerRow } from '@/types/table-changes';
 import type { ClientConfig } from 'pg';
+import type { Response } from 'express';
 type Operation = 'INSERT' | 'UPDATE' | 'DELETE';
 
 export interface Snapshot {
@@ -24,3 +25,5 @@ export interface Options {
   path?: string;
   connection?: ClientConfig;
 }
+
+export type Clients = Set<Response>;

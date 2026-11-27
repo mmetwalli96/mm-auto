@@ -81,3 +81,9 @@ export const githubConfig = {
   repositoryPath: process.env.REPOSITORY_PATH!,
   timeout: parseInt(process.env.TIMEOUT!),
 };
+
+export const sseConfig = {
+  tableUpdateChannel: process.env.TABLE_UPDATE_CHANNEL!,
+  reconnect: parseInt(process.env.RECONNECT!),
+  heartbeat: parseInt(process.env.HEARTBEAT!),
+};

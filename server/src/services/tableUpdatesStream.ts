@@ -1,26 +1,13 @@
 import { pgPool, createPgClient } from '@clients';
 import { createSnapshot, isTable } from '@models';
+import { sseConfig } from '@config';
+import { broadcast } from "@utils";
+
 import type { Notification } from 'pg';
 import type { Response } from 'express';
 import type { TableChangeNotification } from '@/types/sse';
 
-
-const CHANNEL = 'table_update';
-const RECONNECT_MS = 2000;
-const clients = new Set<Response>();
-
-export function send(res: Response, event: string, data: unknown): void {
-    res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
-}
-
-export function broadcast(event: string, data: unknown): void {
-    for (const res of clients) send(res, event, data);
-}
-
-export function addClient(res: Response): () => void {
-    clients.add(res);
-    return () => clients.delete(res);
-}
+export const tableChangesClients = new Set<Response>();
 
 async function onNotification(msg: Notification): Promise<void> {
     try {
@@ -40,7 +27,7 @@ async function onNotification(msg: Notification): Promise<void> {
             row = fetched.row;
         }
 
-        broadcast(change.table_name, { operation: change.operation, id: change.id, row });
+        broadcast(change.table_name, { operation: change.operation, id: change.id, row }, tableChangesClients);
     } catch (error) {
         console.error('Failed to handle Table Change Notification:', error);
     }
@@ -56,14 +43,14 @@ async function listenToTableChanges(onLost: (err?: Error) => void): Promise<void
         onLost(err);
     };
 
-    pgClient.on('error', fail);
+    pgClient.on('error', (err) => fail(err));
     pgClient.on('end', () => fail());
     pgClient.on('notification', onNotification);
 
     try {
         await pgClient.connect();
-        await pgClient.query(`LISTEN ${CHANNEL}`);
-        broadcast('snapshot', await createSnapshot());
+        await pgClient.query(`LISTEN ${sseConfig.tableUpdateChannel}`);
+        broadcast('snapshot', await createSnapshot(), tableChangesClients);
     } catch (err) {
         fail(err as Error);
     }
@@ -72,6 +59,6 @@ async function listenToTableChanges(onLost: (err?: Error) => void): Promise<void
 export function runListenToTableChanges(): void {
     void listenToTableChanges((error) => {
         if (error) console.error('listener connection lost for detecting table changes::', error.message);
-        setTimeout(runListenToTableChanges, RECONNECT_MS);
+        setTimeout(runListenToTableChanges, sseConfig.reconnect);
     });
 }
